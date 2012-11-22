@@ -34,8 +34,8 @@ int main(void){
 
    cout.precision(10);
 
-   const int M = 8;//dim sp hilbert space
-   const int N = 4;//nr of particles
+   const int M = 12;//dim sp hilbert space
+   const int N = 6;//nr of particles
 
    Tools::init(M,N);
 
@@ -87,8 +87,6 @@ int main(void){
          TPM delta;
          delta.convert(newton);
 
-         delta.proj_Tr();
-
          //line search
          double a = delta.line_search(t,P,ham);
 
@@ -101,7 +99,7 @@ int main(void){
 
       cout << nr_newton_iter << endl;
 
-      t /= 5.0;
+      t /= 10.0;
 
       //what is the tolerance for the newton method?
       tolerance = 1.0e-5*t;
