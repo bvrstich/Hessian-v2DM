@@ -68,9 +68,9 @@ void Newton::clear(){
  */
 Newton::Newton(){
 
-   H = new Matrix(hess2t.size() + 1);
+   H = new Matrix(hess2t.size());
 
-   x = new double [hess2t.size() + 1];
+   x = new double [hess2t.size()];
 
 }
 
@@ -81,9 +81,9 @@ Newton::Newton(const Newton &newton_c){
 
    H = new Matrix(newton_c.gH());
 
-   x = new double [hess2t.size() + 1];
+   x = new double [hess2t.size()];
 
-   for(unsigned int i = 0;i < hess2t.size() + 1;++i)
+   for(unsigned int i = 0;i < hess2t.size();++i)
       x[i] = newton_c.gx()[i];
 
 }
@@ -168,16 +168,27 @@ void Newton::construct(double t,const TPM &ham,const SUP &P){
    //construct the p part of the hessian
    constr_hess_I(t,P);
 
-   //the constraint/lagrange multiplier part of the Hessian
-   constr_hess_lagr();
-
-   //last element zero!
-   (*H)(hess2t.size(),hess2t.size()) = 0.0;
-   
    H->symmetrize();
 
-   //and last but not least, solve the system
-   H->solve_sy(x);
+   //invert the hessian using cholesky
+   H->invert();
+
+   //construct the matrix-vector product of inverse hessian with gradient
+   double *y = new double [hess2t.size()];
+
+   H->mv(1.0,x,y);
+
+   //now we can obtain the lagrange multiplier
+   double lambda = vectrace(y)/Htrace();
+
+   //construct the half trace inverse hessian:
+   Hbar(lambda,x);
+
+   //now we can construct the solution:
+   for(unsigned int i = 0;i < hess2t.size();++i)
+      x[i] = y[i] - x[i];
+
+   delete [] y;
 
 }
 
@@ -201,9 +212,6 @@ void Newton::constr_grad(double t,const TPM &ham,const SUP &P){
       x[i] *= std::sqrt(2.0) * norm[i];
 
    }
-
-   //last part of right-hand side (lagrange multiplier)
-   x[hess2t.size()] = 0.0;
 
 }
 
@@ -243,27 +251,6 @@ void Newton::constr_hess_I(double t,const SUP &P){
 }
 
 /**
- * construct the lagrange multiplier part of the Hessian
- */
-void Newton::constr_hess_lagr(){
-
-   int I,J;
-
-   for(unsigned int i = 0;i < hess2t.size();++i){
-
-      I = hess2t[i][0];
-      J = hess2t[i][1];
-
-      if(I == J)
-         (*H)(i,hess2t.size()) = 1.0;
-      else
-         (*H)(i,hess2t.size()) = 0.0;
-
-   }
-
-}
-
-/**
  * access to the x-elements, the solution, as it were.
  * elements are already transformed to matrix mode
  */
@@ -272,5 +259,56 @@ double Newton::gx(int I,int J) const {
    int i = t2hess[I][J];
 
    return x[i] / (std::sqrt(2.0) * norm[i]);
+
+}
+
+/**
+ * trace a vector as if it were a matrix, using the list t2hess
+ * @param y input vector
+ * @return the trace
+ */
+double Newton::vectrace(const double *y) const {
+
+   double ward = 0.0;
+
+   for(int I = 0;I < TPM::gn();++I)
+      ward += y[t2hess[I][I]];
+
+   return ward;
+
+}
+
+/**
+ * @return the trace of the hessian, with trace I actually mean \sum_{IJ} H_{II;JJ}
+ */
+double Newton::Htrace() const {
+
+   double ward = 0.0;
+
+   for(int I = 0;I < TPM::gn();++I)
+      for(int J = 0;J < TPM::gn();++J)
+      ward += (*H)(t2hess[I][I],t2hess[J][J]);
+
+   return ward;
+
+
+
+}
+
+/**
+ * map the hessian onto a vector by tracing out the rows or columns
+ */
+void Newton::Hbar(double scale,double *y){
+
+   for(unsigned int i = 0;i < hess2t.size();++i){
+
+      y[i] = 0.0;
+
+      for(int K = 0;K < TPM::gn();++K)
+         y[i] += (*H)(i,t2hess[K][K]);
+
+      y[i] *= scale;
+
+   }
 
 }

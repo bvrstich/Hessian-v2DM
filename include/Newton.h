@@ -42,13 +42,17 @@ class Newton{
 
       double gx(int,int) const;
 
+      double vectrace(const double *) const;
+
+      double Htrace() const;
+
+      void Hbar(double,double *);
+
       void construct(double,const TPM &,const SUP &);
 
       void constr_grad(double,const TPM &,const SUP &);
 
       void constr_hess_I(double,const SUP &);
-
-      void constr_hess_lagr();
 
       static double gnorm(int);
 

@@ -23,6 +23,7 @@ extern "C" {
    void dsytrf_(char *uplo,int *n,double *A,int *lda,int *ipiv,double *work,int *lwork,int *INFO);
    void dsytrs_(char *uplo,int *n,int *nrhs,double *A,int *lda,int *ipiv,double *B,int *ldb,int *INFO);
    void dpotrs_(char *uplo,int *n,int *nrhs,double *A,int *lda,double *B,int *ldb,int *INFO);
+   void dsymv_(char *uplo,int *n,double *alpha,double *A,int *lda,const double *x,int *incx,double *beta,double *y,int *incy);
 
 }
 

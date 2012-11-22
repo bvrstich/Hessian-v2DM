@@ -91,6 +91,8 @@ class Matrix{
 
       void solve_sy(double *b);
 
+      void mv(double,const double *,double *);
+
    private:
 
       //!double pointer of doubles, contains the numbers, the matrix

@@ -445,3 +445,20 @@ void Matrix::solve_sy(double *b){
    delete [] work;
 
 }
+
+/**
+ * matrix vector product of the matrix *this with input vector
+ * @param alpha scaling factor of the output
+ * @param x array of doubles, input vector
+ * @param y array of doubles, output vector
+ */
+void Matrix::mv(double alpha,const double *x,double *y){
+
+   char uplo = 'U';
+   int inc = 1;
+
+   double beta = 0.0;
+
+   dsymv_(&uplo,&n,&alpha,matrix[0],&n,x,&inc,&beta,y,&inc);
+
+}

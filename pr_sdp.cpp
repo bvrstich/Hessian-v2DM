@@ -87,6 +87,8 @@ int main(void){
          TPM delta;
          delta.convert(newton);
 
+         delta.proj_Tr();
+
          //line search
          double a = delta.line_search(t,P,ham);
 
@@ -99,7 +101,7 @@ int main(void){
 
       cout << nr_newton_iter << endl;
 
-      t /= 10.0;
+      t /= 5.0;
 
       //what is the tolerance for the newton method?
       tolerance = 1.0e-5*t;
@@ -115,9 +117,9 @@ int main(void){
       //overzetten voor volgende stap
       backup_rdm = rdm;
 
-      double a = extrapol.line_search(t,rdm,ham);
+      double b = extrapol.line_search(t,rdm,ham);
 
-      rdm.daxpy(a,extrapol);
+      rdm.daxpy(b,extrapol);
 
    }
 
