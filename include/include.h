@@ -54,6 +54,8 @@
 #include "Vector.h"
 #include "TPM.h"
 #include "SPM.h"
+#include "Hessian.h"
+#include "HessBar.h"
 
 #include "SUP.h"
 #include "EIG.h"

@@ -10,40 +10,24 @@ using std::ifstream;
 
 #include "include.h"
 
-vector< vector<int> > Newton::hess2t;
-int **Newton::t2hess;
-
-vector<double> Newton::norm;
+double *Newton::norm;
 
 /**
  * allocate and fill the static variables and lists
  */
 void Newton::init(){
 
-   t2hess = new int * [TPM::gn()];
-
-   for(int i = 0;i < TPM::gn();++i)
-      t2hess[i] = new int [TPM::gn()];
-
-   vector<int> v(2);
+   norm = new double [Hessian::gn()];
 
    int hess = 0;
 
    for(int i = 0;i < TPM::gn();++i)
       for(int j = i;j < TPM::gn();++j){
 
-         v[0] = i;
-         v[1] = j;
-
-         hess2t.push_back(v);
-
-         t2hess[i][j] = hess;
-         t2hess[j][i] = hess;
-
          if(i == j)
-            norm.push_back(std::sqrt(0.5));
+            norm[hess] = 0.5;
          else
-            norm.push_back(1.0);
+            norm[hess] = std::sqrt(0.5);
 
          ++hess;
 
@@ -56,10 +40,7 @@ void Newton::init(){
  */
 void Newton::clear(){
 
-   for(int i = 0;i < TPM::gn();++i)
-      delete [] t2hess[i];
-
-   delete [] t2hess;
+   delete [] norm;
 
 }
 
@@ -68,9 +49,9 @@ void Newton::clear(){
  */
 Newton::Newton(){
 
-   H = new Matrix(hess2t.size() + 1);
+   H = new Hessian();
 
-   x = new double [hess2t.size() + 1];
+   x = new double [Hessian::gn() + 1];
 
 }
 
@@ -79,11 +60,11 @@ Newton::Newton(){
  */
 Newton::Newton(const Newton &newton_c){
 
-   H = new Matrix(newton_c.gH());
+   H = new Hessian(newton_c.gH());
 
-   x = new double [hess2t.size() + 1];
+   x = new double [Hessian::gn() + 1];
 
-   for(unsigned int i = 0;i < hess2t.size() + 1;++i)
+   for(int i = 0;i < Hessian::gn() + 1;++i)
       x[i] = newton_c.gx()[i];
 
 }
@@ -100,37 +81,9 @@ Newton::~Newton(){
 }
 
 /**
- * @return dimension of the hessian matrix
- */
-int Newton::gdim() const {
-
-   return hess2t.size();
-
-}
-
-/**
- * access to the lists from outside the class
- */
-int Newton::gt2hess(int i,int j){
-
-   return t2hess[i][j];
-
-}
-
-/**
- * access to the lists from outside the class
- * @param option == 0 return a, == 1 return b
- */
-int Newton::ghess2t(int i,int option){
-
-   return hess2t[i][option];
-
-}
-
-/**
  * @return the full Hessian matrix, read only
  */
-const Matrix &Newton::gH() const {
+const Hessian &Newton::gH() const {
 
    return *H;
 
@@ -163,16 +116,22 @@ double* Newton::gx() {
 void Newton::construct(double t,const TPM &ham,const SUP &P){
 
    //first construct the gradient
-   constr_grad(t,ham,P);
+   gradient(t,ham,P);
 
    //construct the p part of the hessian
-   constr_hess_I(t,P);
+   H->I(P.gI());
+
+#ifdef __Q_CON
+   H->Q(P.gQ());
+#endif
+
+   H->dscal(t);
 
    //the constraint/lagrange multiplier part of the Hessian
-   constr_hess_lagr();
+   H->lagr();
 
    //last element zero!
-   (*H)(hess2t.size(),hess2t.size()) = 0.0;
+   (*H)(Hessian::gn(),Hessian::gn()) = 0.0;
    
    H->symmetrize();
 
@@ -187,23 +146,32 @@ void Newton::construct(double t,const TPM &ham,const SUP &P){
  * @param ham hamiltonian object
  * @param P object containing the inverse of the matrix constraints p and q.
  */
-void Newton::constr_grad(double t,const TPM &ham,const SUP &P){
+void Newton::gradient(double t,const TPM &ham,const SUP &P){
 
    int I,J;
 
-   for(unsigned int i = 0;i < hess2t.size();++i){
+#ifdef __Q_CON
+   TPM QQ;
+   QQ.Q(1,P.gQ());
+#endif
 
-      I = hess2t[i][0];
-      J = hess2t[i][1];
+   for(int i = 0;i < Hessian::gn();++i){
+
+      I = Hessian::ghess2t(i,0);
+      J = Hessian::ghess2t(i,1);
 
       x[i] = t * P.gI()(I,J) - ham(I,J);
 
-      x[i] *= std::sqrt(2.0) * norm[i];
+#ifdef __Q_CON
+      x[i] += t * QQ(I,J);
+#endif
+
+      x[i] *= 2.0 * norm[i];
 
    }
 
    //last part of right-hand side (lagrange multiplier)
-   x[hess2t.size()] = 0.0;
+   x[Hessian::gn()] = 0.0;
 
 }
 
@@ -218,48 +186,13 @@ double Newton::gnorm(int i){
 }
 
 /**
- * construct the I part of the hessian matrix
+ * access to the norm from outside of the class, in tp mode
+ * @param I row index
+ * @param J column index
  */
-void Newton::constr_hess_I(double t,const SUP &P){
+double Newton::gnorm(int I,int J){
 
-   int I,J,K,L;
-
-   for(unsigned int i = 0;i < hess2t.size();++i){
-
-      I = hess2t[i][0];
-      J = hess2t[i][1];
-
-      for(unsigned int j = i;j < hess2t.size();++j){
-
-         K = hess2t[j][0];
-         L = hess2t[j][1];
-
-         (*H)(i,j) = ( P.gI()(I,K) * P.gI()(J,L) + P.gI()(I,L) * P.gI()(J,K) ) * norm[i] * norm[j] * t;
-
-      }
-
-   }
-
-}
-
-/**
- * construct the lagrange multiplier part of the Hessian
- */
-void Newton::constr_hess_lagr(){
-
-   int I,J;
-
-   for(unsigned int i = 0;i < hess2t.size();++i){
-
-      I = hess2t[i][0];
-      J = hess2t[i][1];
-
-      if(I == J)
-         (*H)(i,hess2t.size()) = 1.0;
-      else
-         (*H)(i,hess2t.size()) = 0.0;
-
-   }
+   return norm[Hessian::gt2hess(I,J)];
 
 }
 
@@ -269,8 +202,34 @@ void Newton::constr_hess_lagr(){
  */
 double Newton::gx(int I,int J) const {
 
-   int i = t2hess[I][J];
+   int i = Hessian::gt2hess(I,J);
 
-   return x[i] / (std::sqrt(2.0) * norm[i]);
+   return x[i];
+
+}
+
+/**
+ * access to the x-elements, the solution, as it were in sp mode
+ * elements are already transformed to matrix mode
+ */
+double Newton::gx(int a,int b,int c,int d) const {
+
+   if( (a == b) || (c == d) )
+      return 0.0;
+
+   int phase = 1;
+
+   if(a > b)
+      phase *= -1;
+
+   if(c > d)
+      phase *= -1;
+
+   int I = TPM::gs2t(a,b);
+   int J = TPM::gs2t(c,d);
+
+   int i = Hessian::gt2hess(I,J);
+
+   return phase * x[i];
 
 }

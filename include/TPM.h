@@ -86,6 +86,10 @@ class TPM : public Matrix {
 
       void convert(const Newton &);
 
+      static int gs2t(int,int);
+
+      static int gt2s(int,int);
+
       static int gn();
       
       static void init();

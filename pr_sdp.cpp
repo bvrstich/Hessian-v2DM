@@ -40,6 +40,8 @@ int main(void){
    Tools::init(M,N);
 
    TPM::init();
+   Hessian::init();
+   HessBar::init();
    
    Newton::init();
 
@@ -115,9 +117,9 @@ int main(void){
       //overzetten voor volgende stap
       backup_rdm = rdm;
 
-      double a = extrapol.line_search(t,rdm,ham);
+      double b = extrapol.line_search(t,rdm,ham);
 
-      rdm.daxpy(a,extrapol);
+      rdm.daxpy(b,extrapol);
 
    }
 
@@ -129,6 +131,8 @@ int main(void){
 
    Newton::clear();
 
+   HessBar::clear();
+   Hessian::clear();
    TPM::clear();
 
    Tools::clear();

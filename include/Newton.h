@@ -26,15 +26,10 @@ class Newton{
       //copy constructor
       Newton(const Newton &);
 
-      //construct with filename
-      Newton(const char *filename);
-
       //destructor
       virtual ~Newton();
 
-      int gdim() const;
-
-      const Matrix &gH() const;
+      const Hessian &gH() const;
 
       const double *gx() const;
 
@@ -42,19 +37,15 @@ class Newton{
 
       double gx(int,int) const;
 
+      double gx(int,int,int,int) const;
+
       void construct(double,const TPM &,const SUP &);
 
-      void constr_grad(double,const TPM &,const SUP &);
-
-      void constr_hess_I(double,const SUP &);
-
-      void constr_hess_lagr();
+      void gradient(double,const TPM &,const SUP &);
 
       static double gnorm(int);
 
-      static int ghess2t(int,int);
-
-      static int gt2hess(int,int);
+      static double gnorm(int,int);
 
       static void init();
 
@@ -62,16 +53,10 @@ class Newton{
 
    private:
 
-      //!list relating the single-particle space to the Hessian basis
-      static vector< vector<int> > hess2t;
-
-      //!list relating the single-particle space to the Hessian basis
-      static int **t2hess;
-
-      static vector<double> norm;
+      static double *norm;
 
       //!hessian matrix
-      Matrix *H;
+      Hessian *H;
 
       //!input gradient, output delta
       double *x;

@@ -489,8 +489,26 @@ void TPM::convert(const Newton &newton){
 
    for(int i = 0;i < gn();++i)
       for(int j = i;j < gn();++j)
-         (*this)(i,j) = newton.gx(i,j);
+         (*this)(i,j) = newton.gx(i,j)/(2.0*Newton::gnorm(i,j));
 
    this->symmetrize();
+
+}
+
+/**
+ * access to the lists from outside the class
+ */
+int TPM::gt2s(int i,int option){
+
+   return t2s[i][option];
+
+}
+
+/**
+ * access to the lists from outside the class
+ */
+int TPM::gs2t(int a,int b){
+
+   return s2t[a][b];
 
 }
