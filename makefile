@@ -10,8 +10,9 @@
 BINNAME = pr_sdp
 CPPSRC	= pr_sdp.cpp\
             Tools.cpp\
-            TPM.cpp\
             Matrix.cpp\
+            RecMat.cpp\
+            TPM.cpp\
             SPM.cpp\
             SUP.cpp\
             EIG.cpp\

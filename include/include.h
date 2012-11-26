@@ -51,6 +51,7 @@
 
 #include "lapack.h"
 #include "Matrix.h"
+#include "RecMat.h"
 #include "Vector.h"
 #include "TPM.h"
 #include "SPM.h"

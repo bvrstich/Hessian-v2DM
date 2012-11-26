@@ -228,7 +228,7 @@ void Hessian::lagr(){
 }
 
 /**
- * construct the Q part of the hessian matrix
+ * construct the Q part of the hessian matrix: add to current hessian!
  */
 void Hessian::Q(const TPM &Q){
 
