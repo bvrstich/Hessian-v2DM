@@ -13,7 +13,7 @@ using std::vector;
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
- * This class HessBarBar is a class written for the singly-traced Hessian matrix object, it inherits alle the function from its mother 
+ * This class HessBarBar is a class written for a doubly-traced Hessian matrix object, it inherits alle the function from its mother 
  * Matrix, some special member functions and two lists 
  */
 class HessBarBar : public Matrix {
@@ -43,23 +43,9 @@ class HessBarBar : public Matrix {
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d) const;
 
-      void dirprodtrace(double,const TPM &);
-
-      static int ghb2s(int,int);
-
-      static int gs2hb(int,int,int);
-      
-      static void init();
-
-      static void clear();
+      void bar(double,const HessBar &);
 
    private:
-
-      //!list relating the single-particle space to the HessBarBar basis
-      static vector< vector<int> > hb2s;
-
-      //!list relating the single-particle space to the HessBarBar basis
-      static int ***s2hb;
 
 };
 

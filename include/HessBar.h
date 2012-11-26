@@ -41,6 +41,8 @@ class HessBar : public RecMat {
       static int ghb2s(int,int);
 
       static int gs2hb(int,int);
+
+      static int gncol();
       
       static void init();
 

@@ -168,3 +168,12 @@ void HessBar::dirprodtrace(double scale,const TPM &Q){
    }
 
 }
+
+/**
+ * @return the number of columns
+ */
+int HessBar::gncol(){
+
+   return hb2s.size();
+
+}
