@@ -8,22 +8,15 @@
 using std::ostream;
 using std::vector;
 
-#include "Matrix.h"
+#include "RecMat.h"
 
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
  * This class HessBar is a class written for the singly-traced Hessian matrix object, it inherits alle the function from its mother 
- * Matrix, some special member functions and two lists 
+ * RecMat, a rectangular matrix, some special member functions and two lists 
  */
-class HessBar : public Matrix {
-
-   /**
-    * Output stream operator overloaded
-    * @param output The stream to which you are writing (e.g. cout)
-    * @param hessb_p the HessBar you want to print
-    */
-   friend ostream &operator<<(ostream &output,const HessBar &hessb_p);
+class HessBar : public RecMat {
 
    public:
       
@@ -36,9 +29,9 @@ class HessBar : public Matrix {
       //destructor
       virtual ~HessBar();
 
-      using Matrix::operator=;
+      using RecMat::operator=;
 
-      using Matrix::operator();
+      using RecMat::operator();
 
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d,int e,int z) const;
@@ -47,7 +40,7 @@ class HessBar : public Matrix {
 
       static int ghb2s(int,int);
 
-      static int gs2hb(int,int,int);
+      static int gs2hb(int,int);
       
       static void init();
 
@@ -55,11 +48,11 @@ class HessBar : public Matrix {
 
    private:
 
-      //!list relating the single-particle space to the HessBar basis
+      //!list relating the single-particle space to the column indices
       static vector< vector<int> > hb2s;
 
-      //!list relating the single-particle space to the HessBar basis
-      static int ***s2hb;
+      //!list relating the single-particle space to the column indices
+      static int **s2hb;
 
 };
 
