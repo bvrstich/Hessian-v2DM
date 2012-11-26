@@ -445,3 +445,18 @@ void Matrix::solve_sy(double *b){
    delete [] work;
 
 }
+
+/**
+ * take the square of a symmetric matrix
+ */
+void Matrix::squaresym(const Matrix &mat){
+
+   char side = 'L';
+   char uplo = 'U';
+
+   double alpha = 1.0;
+   double beta = 0.0;
+
+   dsymm_(&side,&uplo,&n,&n,&alpha,mat.matrix[0],&n,mat.matrix[0],&n,&beta,matrix[0],&n);
+
+}

@@ -232,6 +232,20 @@ void Hessian::lagr(){
  */
 void Hessian::Q(const TPM &Q){
 
+   HessBar hb;
+   hb.dirprodtrace(2.0/(Tools::gN() - 1.0),Q);
+
+   HessBarBar hbb;
+   hbb.bar(1.0/(Tools::gN() - 1.0),hb);
+
+   TPM Q2;
+   Q2.squaresym(Q);
+
+   SPM Q2bar;
+   Q2bar.bar(4.0/(Tools::gN()*(Tools::gN()-1.0)*(Tools::gN()-1.0)),Q2);
+
+   double trace = Q2bar.trace()/(double)Tools::gN();
+
    int I,J,K,L;
 
    int a,b,c,d;
@@ -261,6 +275,99 @@ void Hessian::Q(const TPM &Q){
 
          //first direct product term
          (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * ( Q(I,K) * Q(J,L) + Q(I,L) * Q(J,K) );
+
+         //first the diagonal terms on tp space
+         if(I == J){
+
+            if(K == L)
+               (*this)(i,j) += trace;
+
+            (*this)(i,j) += 4.0 / ( Tools::gN() * (Tools::gN() - 1.0) ) * Newton::gnorm(j) * Q2(K,L);
+
+            if(e == t)
+               (*this)(i,j) -= Newton::gnorm(j) * Q2bar(z,h);
+            
+            if(z == t)
+               (*this)(i,j) += Newton::gnorm(j) * Q2bar(e,h);
+
+            if(z == h)
+               (*this)(i,j) -= Newton::gnorm(j) * Q2bar(e,t);
+
+         }
+
+         if(K == L){
+
+            (*this)(i,j) += 4.0 / ( Tools::gN() * (Tools::gN() - 1.0) ) * Newton::gnorm(i) * Q2(I,J);
+
+            if(a == c)
+               (*this)(i,j) -= Newton::gnorm(i) * Q2bar(b,d);
+
+            if(b == c)
+               (*this)(i,j) += Newton::gnorm(i) * Q2bar(a,d);
+
+            if(b == d)
+               (*this)(i,j) -= Newton::gnorm(i) * Q2bar(a,c);
+
+         }
+
+         //Now the equalities in single-particle indices
+         if(a == c){
+
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hb(e,z,t,h,b,d);
+
+            //4 hbb terms
+            if(e == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hbb(b,d,z,h);
+
+            if(z == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hbb(b,d,e,h);
+
+            if(z == h)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hbb(b,d,e,t);
+
+         }
+
+         if(b == c){
+
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hb(e,z,t,h,a,d);
+
+            //4 hbb terms
+            if(e == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hbb(a,d,z,h);
+
+            if(z == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hbb(a,d,e,h);
+
+            if(z == h)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hbb(a,d,e,t);
+
+         }
+
+         if(b == d){
+
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hb(e,z,t,h,a,c);
+
+            //4 hbb terms
+            if(e == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hbb(a,c,z,h);
+
+            if(z == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hbb(a,c,e,h);
+
+            if(z == h)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hbb(a,c,e,t);
+
+         }
+
+         //four more years! I mean terms
+         if(e == t)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hb(a,b,c,d,z,h);
+
+         if(z == t)
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * hb(a,b,c,d,e,h);
+
+         if(z == h)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * hb(a,b,c,d,e,t);
 
       }
 

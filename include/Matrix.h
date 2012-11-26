@@ -91,6 +91,8 @@ class Matrix{
 
       void solve_sy(double *b);
 
+      void squaresym(const Matrix &);
+
    private:
 
       //!double pointer of doubles, contains the numbers, the matrix
