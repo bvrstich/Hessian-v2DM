@@ -512,3 +512,52 @@ int TPM::gs2t(int a,int b){
    return s2t[a][b];
 
 }
+
+/**
+ * The G-map that maps a PHM object onto a TPM object.
+ * @param option = 1, G_down - map is used, = -1 G^{-1}_up - map is used.
+ * @param phm input PHM 
+ */
+void TPM::G(int option,const PHM &phm){
+
+   SPM spm;
+
+   if(option == 1)
+      spm.bar(1.0/(Tools::gN() - 1.0),phm);
+   else
+      spm.bar(1.0/(Tools::gM() - Tools::gN() + 1.0),phm);
+
+   int a,b,c,d;
+
+   for(int i = 0;i < gn();++i){
+
+      a = t2s[i][0];
+      b = t2s[i][1];
+
+      for(int j = i;j < gn();++j){
+
+         c = t2s[j][0];
+         d = t2s[j][1];
+
+         (*this)(i,j) = phm(b,d,c,a) - phm(a,d,c,b) - phm(b,c,d,a) + phm(a,c,d,b);
+
+         if(b == d)
+            (*this)(i,j) += spm(a,c);
+
+         if(b == c)
+            (*this)(i,j) -= spm(a,d);
+
+         if(a == c)
+            (*this)(i,j) += spm(b,d);
+
+      }
+
+   }
+
+   //nog schalen met 4 voor G^{-1}
+   if(option == -1)
+      this->dscal(0.25);
+
+   this->symmetrize();
+
+}

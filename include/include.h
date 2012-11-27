@@ -10,8 +10,6 @@
 #define __Q_CON
 #define __G_CON
 
-#include "PHM.h"
-
 #endif
 
 #ifdef PQGT1
@@ -20,7 +18,6 @@
 #define __G_CON
 #define __T1_CON
 
-#include "PHM.h"
 #include "DPM.h"
 
 #endif
@@ -31,7 +28,6 @@
 #define __G_CON
 #define __T2_CON
 
-#include "PHM.h"
 #include "PPHM.h"
 
 #endif
@@ -43,7 +39,6 @@
 #define __T1_CON
 #define __T2_CON
 
-#include "PHM.h"
 #include "DPM.h"
 #include "PPHM.h"
 
@@ -55,6 +50,7 @@
 #include "Vector.h"
 #include "TPM.h"
 #include "SPM.h"
+#include "PHM.h"
 #include "Hessian.h"
 #include "HessBar.h"
 #include "HessBarBar.h"

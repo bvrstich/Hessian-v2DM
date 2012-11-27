@@ -14,6 +14,7 @@ CPPSRC	= pr_sdp.cpp\
             RecMat.cpp\
             TPM.cpp\
             SPM.cpp\
+            PHM.cpp\
             SUP.cpp\
             EIG.cpp\
             Hessian.cpp\
@@ -50,7 +51,7 @@ all:
 	@echo
 	@echo '  +++ Building $(BINNAME)...'
 	@echo	
-	$(MAKE) $(BRIGHT_ROOT)/$(BINNAME)
+	$(MAKE) $(BRIGHT_ROOT)/$(BINNAME) DEFS="-DPQ"
 	@if test $?; then \
 	   echo; echo '*************** FAILED! ***************' ; echo; \
 	 else \

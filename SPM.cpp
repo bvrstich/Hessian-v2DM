@@ -53,3 +53,25 @@ void SPM::bar(double scale,const TPM &tpm){
    this->symmetrize();
 
 }
+
+/**
+ * construct the SPM object by tracing out one pair of indices from a PHM object
+ * @param tpm input PHM object
+ */
+void SPM::bar(double scale,const PHM &phm){
+
+   for(int a = 0;a < Tools::gM();++a)
+      for(int b = a;b < Tools::gM();++b){
+
+         (*this)(a,b) = 0.0;
+
+         for(int c = 0;c < Tools::gM();++c)
+            (*this)(a,b) += phm(a,c,b,c);
+
+         (*this)(a,b) *= scale;
+
+      }
+   
+   this->symmetrize();
+
+}

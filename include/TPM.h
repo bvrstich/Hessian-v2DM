@@ -11,6 +11,7 @@ using std::vector;
 #include "Matrix.h"
 
 class SPM;
+class PHM;
 class SUP;
 class Newton;
 
@@ -85,6 +86,8 @@ class TPM : public Matrix {
       void constr_sp_diag(int);
 
       void convert(const Newton &);
+
+      void G(int,const PHM &);
 
       static int gs2t(int,int);
 
