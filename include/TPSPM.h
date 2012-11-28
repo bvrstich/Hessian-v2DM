@@ -1,5 +1,5 @@
-#ifndef HESSBAR_H
-#define HESSBAR_H
+#ifndef TPSPM_H
+#define TPSPM_H
 
 #include <iostream>
 #include <fstream>
@@ -13,21 +13,22 @@ using std::vector;
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
- * This class HessBar is a class written for the singly-traced Hessian matrix object, it inherits alle the function from its mother 
+ * This class TPSPM is a class written for the singly-traced Hessian matrix object,
+ * being a rectangular matrix on TP for the rows, and SP for the columns, it inherits alle the function from its mother 
  * RecMat, a rectangular matrix, some special member functions and two lists 
  */
-class HessBar : public RecMat {
+class TPSPM : public RecMat {
 
    public:
       
       //constructor
-      HessBar();
+      TPSPM();
 
       //copy constructor
-      HessBar(const HessBar &);
+      TPSPM(const TPSPM &);
 
       //destructor
-      virtual ~HessBar();
+      virtual ~TPSPM();
 
       using RecMat::operator=;
 
@@ -38,9 +39,9 @@ class HessBar : public RecMat {
 
       void dirprodtrace(double,const TPM &);
 
-      static int ghb2s(int,int);
+      static int gspmm2s(int,int);
 
-      static int gs2hb(int,int);
+      static int gs2spmm(int,int);
 
       static int gncol();
       
@@ -51,10 +52,10 @@ class HessBar : public RecMat {
    private:
 
       //!list relating the single-particle space to the column indices
-      static vector< vector<int> > hb2s;
+      static vector< vector<int> > spmm2s;
 
       //!list relating the single-particle space to the column indices
-      static int **s2hb;
+      static int **s2spmm;
 
 };
 

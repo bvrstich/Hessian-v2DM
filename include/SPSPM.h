@@ -1,5 +1,5 @@
-#ifndef HESSBARBAR_H
-#define HESSBARBAR_H
+#ifndef SPSPM_H
+#define SPSPM_H
 
 #include <iostream>
 #include <fstream>
@@ -13,28 +13,28 @@ using std::vector;
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
- * This class HessBarBar is a class written for a doubly-traced Hessian matrix object, it inherits alle the function from its mother 
+ * This class SPSPM is a class written for a doubly-traced Hessian matrix object, it inherits alle the function from its mother 
  * Matrix, some special member functions and two lists 
  */
-class HessBarBar : public Matrix {
+class SPSPM : public Matrix {
 
    /**
     * Output stream operator overloaded
     * @param output The stream to which you are writing (e.g. cout)
-    * @param hessbb_p the HessBarBar you want to print
+    * @param hessbb_p the SPSPM you want to print
     */
-   friend ostream &operator<<(ostream &output,const HessBarBar &hessbb_p);
+   friend ostream &operator<<(ostream &output,const SPSPM &hessbb_p);
 
    public:
       
       //constructor
-      HessBarBar();
+      SPSPM();
 
       //copy constructor
-      HessBarBar(const HessBarBar &);
+      SPSPM(const SPSPM &);
 
       //destructor
-      virtual ~HessBarBar();
+      virtual ~SPSPM();
 
       using Matrix::operator=;
 
@@ -43,7 +43,7 @@ class HessBarBar : public Matrix {
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d) const;
 
-      void bar(double,const HessBar &);
+      void bar(double,const TPSPM &);
 
    private:
 

@@ -42,7 +42,7 @@ int main(void){
    TPM::init();
    PHM::init();
    Hessian::init();
-   HessBar::init();
+   TPSPM::init();
    
    Newton::init();
 
@@ -132,7 +132,7 @@ int main(void){
 
    Newton::clear();
 
-   HessBar::clear();
+   TPSPM::clear();
    Hessian::clear();
    PHM::clear();
    TPM::clear();

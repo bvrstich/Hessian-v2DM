@@ -52,8 +52,8 @@
 #include "SPM.h"
 #include "PHM.h"
 #include "Hessian.h"
-#include "HessBar.h"
-#include "HessBarBar.h"
+#include "TPSPM.h"
+#include "SPSPM.h"
 
 #include "SUP.h"
 #include "EIG.h"
