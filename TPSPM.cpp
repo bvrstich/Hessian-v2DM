@@ -65,7 +65,7 @@ void TPSPM::clear(){
 TPSPM::TPSPM() : RecMat(Hessian::gn(),spmm2s.size()) { }
 
 /**
- * copy constructor: constructs RecMat object of dimension M*(M - 1)/2 and fills it with the content of matrix tpspm_c
+ * copy constructor: constructs RecMat object
  * @param tpspm_c object that will be copied into this.
  */
 TPSPM::TPSPM(const TPSPM &tpspm_c) : RecMat(tpspm_c){ }
@@ -170,9 +170,9 @@ void TPSPM::dirprodtrace(double scale,const TPM &Q){
 }
 
 /**
- * @return the number of columns
+ * @return the dimension of the single-particle matrix space
  */
-int TPSPM::gncol(){
+int TPSPM::gspmmdim(){
 
    return spmm2s.size();
 

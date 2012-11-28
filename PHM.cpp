@@ -161,4 +161,31 @@ void PHM::G(int option,const TPM &tpm)
 
 }
 
+/**
+ * static function that returns the dimension of ph-space
+ */
+int PHM::gn(){
+
+   return ph2s.size();
+
+}
+
+/**
+ * access to the lists from outside of the class
+ */
+int PHM::gs2ph(int a,int b){
+
+   return s2ph[a][b];
+
+}
+
+/**
+ * access to the lists from outside of the class
+ */
+int PHM::gph2s(int option,int i){
+
+   return ph2s[i][option];
+
+}
+
 /* vim: set ts=3 sw=3 expandtab :*/

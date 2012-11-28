@@ -1,5 +1,5 @@
-#ifndef TPSPM_H
-#define TPSPM_H
+#ifndef PHSPM_H
+#define PHSPM_H
 
 #include <iostream>
 #include <fstream>
@@ -10,25 +10,27 @@ using std::vector;
 
 #include "RecMat.h"
 
+class PHM;
+
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
- * This class TPSPM is a class written for the singly-traced Hessian matrix object,
- * being a rectangular matrix on TP for the rows, and SP for the columns, it inherits alle the function from its mother 
+ * This class PHSPM is a class written for the singly-traced symmetrized direct product of ph-matrices
+ * being a rectangular matrix on PH for the rows, and SP for the columns, it inherits alle the function from its mother 
  * RecMat, a rectangular matrix, some special member functions and two lists 
  */
-class TPSPM : public RecMat {
+class PHSPM : public RecMat {
 
    public:
       
       //constructor
-      TPSPM();
+      PHSPM();
 
       //copy constructor
-      TPSPM(const TPSPM &);
+      PHSPM(const PHSPM &);
 
       //destructor
-      virtual ~TPSPM();
+      virtual ~PHSPM();
 
       using RecMat::operator=;
 
@@ -37,13 +39,13 @@ class TPSPM : public RecMat {
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d,int e,int z) const;
 
-      void dirprodtrace(double,const TPM &);
+      void dirprodtrace(double,const PHM &);
 
-      static int gspmm2s(int,int);
+      static int gphmm2ph(int,int);
 
-      static int gs2spmm(int,int);
+      static int gph2phmm(int,int);
 
-      static int gspmmdim();
+      static int gphmmdim();
       
       static void init();
 
@@ -51,11 +53,11 @@ class TPSPM : public RecMat {
 
    private:
 
-      //!list relating the single-particle space to the column indices
-      static vector< vector<int> > spmm2s;
+      //!list relating the ph-matrix space indices to the ph-indices (like hess2t)
+      static vector< vector<int> > phmm2ph;
 
       //!list relating the single-particle space to the column indices
-      static int **s2spmm;
+      static int **ph2phmm;
 
 };
 

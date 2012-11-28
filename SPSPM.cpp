@@ -16,7 +16,7 @@ using std::ios;
 /**
  * standard constructor:
  */
-SPSPM::SPSPM() : Matrix(TPSPM::gncol()) { }
+SPSPM::SPSPM() : Matrix(TPSPM::gspmmdim()) { }
 
 /**
  * copy constructor: constructs Matrix object of dimension M*(M - 1)/2 and fills it with the content of matrix spspm_c

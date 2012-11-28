@@ -53,6 +53,7 @@
 #include "PHM.h"
 #include "Hessian.h"
 #include "TPSPM.h"
+#include "PHSPM.h"
 #include "SPSPM.h"
 
 #include "SUP.h"

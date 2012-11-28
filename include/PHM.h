@@ -52,6 +52,12 @@ class PHM : public Matrix {
 
       void G(int option,const TPM &);
 
+      static int gs2ph(int,int);
+
+      static int gph2s(int,int);
+
+      static int gn();
+
       static void init();
 
       static void clear();
