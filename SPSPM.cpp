@@ -49,9 +49,9 @@ double SPSPM::operator()(int a,int b,int c,int d) const {
 /**
  * construct a SPSPM object by tracing one pair of indices of a TPSPM object
  * @param scale scalefactor for the barred object
- * @param hb input TPSPM object
+ * @param tpspm input TPSPM object
  */
-void SPSPM::bar(double scale,const TPSPM &hb){
+void SPSPM::bar(double scale,const TPSPM &tpspm){
 
    int a,b,c,d;
 
@@ -68,7 +68,40 @@ void SPSPM::bar(double scale,const TPSPM &hb){
          (*this)(i,j) = 0.0;
 
          for(int l = 0;l < Tools::gM();++l)
-            (*this)(i,j) += hb(a,l,b,l,c,d);
+            (*this)(i,j) += tpspm(a,l,b,l,c,d);
+
+         (*this)(i,j) *= scale;
+
+      }
+   }
+
+   this->symmetrize();
+
+}
+
+/**
+ * construct a SPSPM object by tracing one pair of indices of a PHSPM object
+ * @param scale scalefactor for the barred object
+ * @param phspm input PHSPM object
+ */
+void SPSPM::bar(double scale,const PHSPM &phspm){
+
+   int a,b,c,d;
+
+   for(int i = 0;i < gn();++i){
+
+      a = TPSPM::gspmm2s(i,0);
+      b = TPSPM::gspmm2s(i,1);
+
+      for(int j = i;j < gn();++j){
+
+         c = TPSPM::gspmm2s(j,0);
+         d = TPSPM::gspmm2s(j,1);
+
+         (*this)(i,j) = 0.0;
+
+         for(int l = 0;l < Tools::gM();++l)
+            (*this)(i,j) += phspm(a,l,b,l,c,d);
 
          (*this)(i,j) *= scale;
 

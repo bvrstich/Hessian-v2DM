@@ -10,6 +10,8 @@ using std::vector;
 
 #include "Matrix.h"
 
+class PHM;
+
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
@@ -51,6 +53,8 @@ class Hessian : public Matrix {
       void I(const TPM &);
 
       void Q(const TPM &);
+
+      void G(const PHM &);
 
       void lagr();
 

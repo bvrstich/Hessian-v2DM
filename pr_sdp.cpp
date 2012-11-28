@@ -34,8 +34,8 @@ int main(void){
 
    cout.precision(10);
 
-   const int M = 8;//dim sp hilbert space
-   const int N = 4;//nr of particles
+   const int M = 12;//dim sp hilbert space
+   const int N = 7;//nr of particles
 
    Tools::init(M,N);
 
@@ -62,6 +62,8 @@ int main(void){
 
    double t = 1.0;
    double tolerance = 1.0e-5;
+
+   int tot_iter = 0;
 
    //outer iteration: scaling of the potential barrier
    while(t > 1.0e-12){
@@ -103,7 +105,7 @@ int main(void){
 
       cout << nr_newton_iter << endl;
 
-      t /= 10.0;
+      t /= 5.0;
 
       //what is the tolerance for the newton method?
       tolerance = 1.0e-5*t;
@@ -123,6 +125,8 @@ int main(void){
 
       rdm.daxpy(b,extrapol);
 
+      tot_iter += nr_newton_iter;
+
    }
 
    cout << endl;
@@ -130,6 +134,9 @@ int main(void){
    cout << "Final Energy:\t" << ham.ddot(rdm) << endl;
    cout << endl;
    cout << "Final Spin:\t" << rdm.S_2() << endl;
+
+   cout << endl;
+   cout << "Total nr of Newton steps = " << tot_iter << endl;
 
    Newton::clear();
 

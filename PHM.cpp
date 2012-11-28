@@ -184,7 +184,7 @@ int PHM::gs2ph(int a,int b){
  */
 int PHM::gph2s(int option,int i){
 
-   return ph2s[i][option];
+   return ph2s[option][i];
 
 }
 

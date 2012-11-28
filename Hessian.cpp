@@ -374,3 +374,126 @@ void Hessian::Q(const TPM &Q){
    }
 
 }
+
+/**
+ * construct the G part of the hessian matrix: add to current hessian!
+ */
+void Hessian::G(const PHM &G){
+
+   PHSPM phspm;
+   phspm.dirprodtrace(2.0/(Tools::gN() - 1.0),G);
+
+   SPSPM spspm;
+   spspm.bar(1.0/(Tools::gN() - 1.0),phspm);
+
+   int I,J,K,L;
+
+   int a,b,c,d;
+   int e,z,t,h;
+
+   for(unsigned int i = 0;i < hess2t.size();++i){
+
+      I = hess2t[i][0];
+      J = hess2t[i][1];
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(unsigned int j = i;j < hess2t.size();++j){
+
+         K = hess2t[j][0];
+         L = hess2t[j][1];
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         //first 16 direct product terms of the PHM object
+         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * (
+         
+            G(a,d,e,h) * G(c,b,t,z) + G(a,d,t,z) * G(c,b,e,h) - G(a,d,z,h) * G(c,b,t,e) - G(a,d,t,e) * G(c,b,z,h)
+
+            - G(a,d,e,t) * G(c,b,h,z) - G(a,d,h,z) * G(c,b,e,t) + G(a,d,z,t) * G(c,b,h,e) + G(a,d,h,e) * G(c,b,z,t)
+
+            - G(b,d,e,h) * G(c,a,t,z) - G(b,d,t,z) * G(c,a,e,h) + G(b,d,z,h) * G(c,a,t,e) + G(b,d,t,e) * G(c,a,z,h)
+
+            + G(b,d,e,t) * G(c,a,h,z) + G(b,d,h,z) * G(c,a,e,t) - G(b,d,z,t) * G(c,a,h,e) - G(b,d,h,e) * G(c,a,z,t)
+
+            - G(a,c,e,h) * G(d,b,t,z) - G(a,c,t,z) * G(d,b,e,h) + G(a,c,z,h) * G(d,b,t,e) + G(a,c,t,e) * G(d,b,z,h)
+
+            + G(a,c,e,t) * G(d,b,h,z) + G(a,c,h,z) * G(d,b,e,t) - G(a,c,z,t) * G(d,b,h,e) - G(a,c,h,e) * G(d,b,z,t)
+
+            + G(b,c,e,h) * G(d,a,t,z) + G(b,c,t,z) * G(d,a,e,h) - G(b,c,z,h) * G(d,a,t,e) - G(b,c,t,e) * G(d,a,z,h)
+
+            - G(b,c,e,t) * G(d,a,h,z) - G(b,c,h,z) * G(d,a,e,t) + G(b,c,z,t) * G(d,a,h,e) + G(b,c,h,e) * G(d,a,z,t) );
+
+         if(b == d){
+
+            //first four PHSPM terms:
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(e,h,t,z,a,c) - phspm(z,h,t,e,a,c) - phspm(e,t,h,z,a,c) + phspm(z,t,h,e,a,c) );
+
+            //then four SPSPM terms:
+            if(z == h)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spspm(a,c,e,t);
+
+            if(z == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spspm(a,c,e,h);
+
+            if(e == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spspm(a,c,z,h);
+
+         }
+
+         if(b == c){
+
+            //first four PHSPM terms:
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(e,h,t,z,a,d) - phspm(z,h,t,e,a,d) - phspm(e,t,h,z,a,d) + phspm(z,t,h,e,a,d) );
+
+            //then four SPSPM terms
+            if(z == h)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spspm(a,d,e,t);
+
+            if(z == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spspm(a,d,e,h);
+
+            if(e == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spspm(a,d,z,h);
+
+         }
+
+         if(a == c){
+
+            //first four PHSPM terms:
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(e,h,t,z,b,d) - phspm(z,h,t,e,b,d) - phspm(e,t,h,z,b,d) + phspm(z,t,h,e,b,d) );
+
+            //then four SPSPM terms
+            if(z == h)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spspm(b,d,e,t);
+
+            if(z == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spspm(b,d,e,h);
+
+            if(e == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spspm(b,d,z,h);
+
+         }
+
+         if(z == h)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(a,d,c,b,e,t) - phspm(b,d,c,a,e,t) - phspm(a,c,d,b,e,t) + phspm(b,c,d,a,e,t) );
+
+         if(z == t)
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(a,d,c,b,e,h) - phspm(b,d,c,a,e,h) - phspm(a,c,d,b,e,h) + phspm(b,c,d,a,e,h) );
+
+         if(e == t)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(a,d,c,b,z,h) - phspm(b,d,c,a,z,h) - phspm(a,c,d,b,z,h) + phspm(b,c,d,a,z,h) );
+
+      }
+
+   }
+
+}
