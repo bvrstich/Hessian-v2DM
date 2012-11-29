@@ -18,8 +18,6 @@
 #define __G_CON
 #define __T1_CON
 
-#include "DPM.h"
-
 #endif
 
 #ifdef PQGT2
@@ -39,7 +37,6 @@
 #define __T1_CON
 #define __T2_CON
 
-#include "DPM.h"
 #include "PPHM.h"
 
 #endif
@@ -51,6 +48,8 @@
 #include "TPM.h"
 #include "SPM.h"
 #include "PHM.h"
+#include "DPM.h"
+
 #include "Hessian.h"
 #include "TPSPM.h"
 #include "PHSPM.h"
