@@ -30,7 +30,7 @@ using std::ofstream;
  * The potential is minimized using the Newton-Raphson method and the resulting linear system
  * is solved via the linear conjugate gradient method.
  */
-int main(void){
+int main(void) {
 
    cout.precision(10);
 

@@ -164,6 +164,11 @@ void Newton::gradient(double t,const TPM &ham,const SUP &P){
    GG.G(1,P.gG());
 #endif
 
+#ifdef __T1_CON
+   TPM TT1;
+   TT1.T(1,P.gT1());
+#endif
+
    for(int i = 0;i < Hessian::gn();++i){
 
       I = Hessian::ghess2t(i,0);
@@ -177,6 +182,10 @@ void Newton::gradient(double t,const TPM &ham,const SUP &P){
 
 #ifdef __G_CON
       x[i] += t * GG(I,J);
+#endif
+
+#ifdef __T1_CON
+      x[i] += t * TT1(I,J);
 #endif
 
       x[i] *= 2.0 * norm[i];

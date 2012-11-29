@@ -561,3 +561,68 @@ void TPM::G(int option,const PHM &phm){
    this->symmetrize();
 
 }
+
+/**
+ * map a DPM (dpm) on a TPM (*this) with a T1 map, (Q-like map), watch out for the inverse
+ * up map, when M = 2*N it is singular! So don't use it!:
+ * @param option = +1 T1_down , =-1 inverse T1_up
+ * @param dpm The input DPM
+ */
+void TPM::T(int option,const DPM &dpm){
+
+   TPM tpm;
+   tpm.bar(1.0,dpm);
+
+   if(option == 1){
+
+      double a = 1;
+      double b = 1.0/(3.0*Tools::gN()*(Tools::gN() - 1.0));
+      double c = 0.5/(Tools::gN() - 1.0);
+
+      this->Q(1,a,b,c,tpm);
+
+   }
+   else{//option == -1
+
+      double a = Tools::gM() - 4.0;
+      double b = (Tools::gM() - Tools::gN() - 2.0)/(Tools::gN()*(Tools::gN() - 1.0));
+      double c = (Tools::gM() - Tools::gN() - 2.0)/(Tools::gN() - 1.0);
+
+      this->Q(-1,a,b,c,tpm);
+
+   }
+
+}
+
+/**
+ * calculate the trace of one pair of sp indices of a DPM an put in (*this):\n\n
+ * TPM(a,b,d,e) = sum_{c} DPM(a,b,c,d,e,c)
+ * @param dpm input DPM
+ */
+void TPM::bar(double scale,const DPM &dpm){
+
+   int a,b,c,d;
+
+   for(int i = 0;i < gn();++i){
+
+      a = t2s[i][0];
+      b = t2s[i][1];
+
+      for(int j = i;j < gn();++j){
+
+         c = t2s[j][0];
+         d = t2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int l = 0;l < Tools::gM();++l)
+            (*this)(i,j) += dpm(a,b,l,c,d,l);
+
+         (*this)(i,j) *= scale;
+
+      }
+   }
+
+   this->symmetrize();
+
+}
