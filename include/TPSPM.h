@@ -39,6 +39,8 @@ class TPSPM : public RecMat {
 
       void dirprodtrace(double,const TPM &);
 
+      void bar(double,const Hessian &);
+
       static int gspmm2s(int,int);
 
       static int gs2spmm(int,int);

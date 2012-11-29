@@ -129,6 +129,10 @@ void Newton::construct(double t,const TPM &ham,const SUP &P){
    H->G(P.gG());
 #endif
 
+#ifdef __T1_CON
+   H->T(P.gT1());
+#endif
+
    H->dscal(t);
 
    //the constraint/lagrange multiplier part of the Hessian

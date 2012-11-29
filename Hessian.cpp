@@ -497,3 +497,205 @@ void Hessian::G(const PHM &G){
    }
 
 }
+
+/**
+ * Fills a Hessian object with the two-times traced symmetric direct product of a DPM object.
+ * @param dpm input DPM object
+ */
+void Hessian::dirprodtrace(const DPM &dpm){
+   
+   int I,J,K,L;
+
+   int a,b,c,d;
+   int e,z,t,h;
+
+   for(unsigned int i = 0;i < hess2t.size();++i){
+
+      I = hess2t[i][0];
+      J = hess2t[i][1];
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(unsigned int j = i;j < hess2t.size();++j){
+
+         K = hess2t[j][0];
+         L = hess2t[j][1];
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         (*this)(i,j) = 0.0;
+
+         for(int k = 0;k < Tools::gM();++k)
+            for(int l = 0;l < Tools::gM();++l)
+               (*this)(i,j) += dpm(a,b,k,e,z,l) * dpm(c,d,k,t,h,l) + dpm(a,b,k,t,h,l) * dpm(c,d,k,e,z,l);
+
+      }
+   }
+
+   this->symmetrize();
+
+}
+
+/**
+ * construct the T1 part of the hessian matrix: add to current hessian!
+ * @param dpm input DPM object
+ */
+void Hessian::T(const DPM &dpm){
+
+   //M^10 scaling!
+   Hessian tpmm;
+   tpmm.dirprodtrace(dpm);
+
+   TPSPM tpspm;
+   tpspm.bar(1.0/(Tools::gN() - 1.0),tpmm);
+
+   SPSPM spmm;
+   spmm.bar(0.5/(Tools::gN() - 1.0),tpspm);
+
+   DPM T2;
+   T2.squaresym(dpm);
+
+   TPM T2bar;
+   T2bar.bar(4.0/(Tools::gN() * (Tools::gN() - 1.0)),T2);
+
+   SPM T2barbar;
+   T2barbar.bar(0.5/(Tools::gN() - 1.0),T2bar);
+
+   double trace = 4.0/ ( Tools::gN() * Tools::gN() * (Tools::gN() - 1.0) * (Tools::gN() - 1.0) ) * T2.trace();
+   
+   int I,J,K,L;
+
+   int a,b,c,d;
+   int e,z,t,h;
+
+   for(unsigned int i = 0;i < hess2t.size();++i){
+
+      I = hess2t[i][0];
+      J = hess2t[i][1];
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(unsigned int j = i;j < hess2t.size();++j){
+
+         K = hess2t[j][0];
+         L = hess2t[j][1];
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         //first direct product term:
+         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * tpmm(i,j);
+
+         if(I == J){
+
+            //np
+            if(K == L)
+               (*this)(i,j) += trace;
+
+            //tp
+            (*this)(i,j) += Newton::gnorm(j) * T2bar(e,z,t,h);
+
+            //4 sp
+            if(z == h)
+               (*this)(i,j) -= Newton::gnorm(j) * T2barbar(e,t);
+
+            if(z == t)
+               (*this)(i,j) += Newton::gnorm(j) * T2barbar(e,h);
+
+            if(e == t)
+               (*this)(i,j) -= Newton::gnorm(j) * T2barbar(z,h);
+
+         }
+
+         if(K == L){
+
+            //tp
+            (*this)(i,j) += Newton::gnorm(i) * T2bar(a,b,c,d);
+
+            //4 sp
+            if(b == d)
+               (*this)(i,j) -= Newton::gnorm(i) * T2barbar(a,c);
+
+            if(b == c)
+               (*this)(i,j) += Newton::gnorm(i) * T2barbar(a,d);
+
+            if(a == c)
+               (*this)(i,j) -= Newton::gnorm(i) * T2barbar(b,d);
+
+         }
+
+         if(b == d){
+
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(e,z,t,h,a,c);
+
+            if(z == h)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spmm(a,c,e,t);
+
+            if(z == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spmm(a,c,e,h);
+
+            if(e == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spmm(a,c,z,h);
+
+         }
+
+         if(b == c){
+
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * tpspm(e,z,t,h,a,d);
+
+            if(z == h)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spmm(a,d,e,t);
+
+            if(z == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spmm(a,d,e,h);
+
+            if(e == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spmm(a,d,z,h);
+
+         }
+
+         if(a == c){
+
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(e,z,t,h,b,d);
+
+            if(z == h)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spmm(b,d,e,t);
+
+            if(z == t)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * spmm(b,d,e,h);
+
+            if(e == t)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * spmm(b,d,z,h);
+
+         }
+
+         if(z == h)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,e,t);
+
+         if(z == t)
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,e,h);
+
+         if(e == t)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,z,h);
+
+      }
+   }
+
+   this->symmetrize();
+
+}
