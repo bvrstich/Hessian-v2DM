@@ -192,6 +192,16 @@ double **RecMat::gRecMat(){
 }
 
 /**
+ * const version
+ * @return the underlying pointer to recmat, useful for mkl applications
+ */
+double **RecMat::gRecMat() const {
+
+   return recmat;
+
+}
+
+/**
  * @return the number of rows
  */
 int RecMat::gm() const{

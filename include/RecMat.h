@@ -64,6 +64,9 @@ class RecMat{
       //get the pointer to the matrix
       double **gRecMat();
 
+      //get the pointer to the matrix
+      double **gRecMat() const;
+
       int gn() const;
       
       int gm() const;

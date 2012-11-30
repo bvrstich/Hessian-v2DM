@@ -22,6 +22,8 @@ CPPSRC	= pr_sdp.cpp\
             TPSPM.cpp\
             SPSPM.cpp\
             PHSPM.cpp\
+            TPTPnsM.cpp\
+            TPSPnsM.cpp\
             Newton.cpp
 
 OBJ	= $(CPPSRC:.cpp=.o)

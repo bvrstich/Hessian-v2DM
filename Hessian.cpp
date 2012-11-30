@@ -553,7 +553,13 @@ void Hessian::T(const DPM &dpm){
    //M^10 scaling!
    Hessian tpmm;
    tpmm.dirprodtrace(dpm);
+/*
+   TPSPnsM tpspnsm;
+   tpspnsm.reorder(dpm);
 
+   TPTPM tpmm;
+   tpmm.square(tpspnsm);
+*/
    TPSPM tpspm;
    tpspm.bar(1.0/(Tools::gN() - 1.0),tpmm);
 

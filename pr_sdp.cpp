@@ -45,10 +45,46 @@ int main(void) {
 
    Hessian::init();
    TPSPM::init();
+   TPTPnsM::init();
    PHSPM::init();
-   
+
    Newton::init();
 
+   DPM dpm;
+   dpm.fill_Random();
+
+   ofstream out("slow.out");
+   out.precision(10);
+
+   Hessian H;
+   H.dirprodtrace(dpm);
+
+   out << H;
+
+   TPSPnsM tpspnsm;
+   tpspnsm.reorder(dpm);
+
+   TPTPnsM tpmm;
+   tpmm.square(tpspnsm);
+
+   int I,J,K,L;
+
+   for(unsigned int i = 0;i < Hessian::gn();++i){
+
+      I = Hessian::ghess2t(i,0);
+      J = Hessian::ghess2t(i,1);
+
+      for(unsigned int j = 0;j < Hessian::gn();++j){
+
+         K = Hessian::ghess2t(j,0);
+         L = Hessian::ghess2t(j,1);
+
+         //first direct product term:
+         cout <<  i << "\t" << j << "\t|\t" << I << "\t" << J << "\t" << K << "\t" << L << "\t" << tpmm(I,K,J,L) + tpmm(I,L,J,K) << endl;
+
+      }
+   }
+/*
    Newton newton;
 
    //hamiltoniaan
@@ -132,17 +168,18 @@ int main(void) {
    }
 
    cout << endl;
-   
+
    cout << "Final Energy:\t" << ham.ddot(rdm) << endl;
    cout << endl;
    cout << "Final Spin:\t" << rdm.S_2() << endl;
 
    cout << endl;
    cout << "Total nr of Newton steps = " << tot_iter << endl;
-
+*/
    Newton::clear();
 
    PHSPM::clear();
+   TPTPnsM::clear();
    TPSPM::clear();
    Hessian::clear();
 

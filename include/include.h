@@ -54,6 +54,8 @@
 #include "TPSPM.h"
 #include "PHSPM.h"
 #include "SPSPM.h"
+#include "TPTPnsM.h"
+#include "TPSPnsM.h"
 
 #include "SUP.h"
 #include "EIG.h"
