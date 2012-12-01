@@ -550,16 +550,12 @@ void Hessian::dirprodtrace(const DPM &dpm){
  */
 void Hessian::T(const DPM &dpm){
 
-   //M^10 scaling!
-   Hessian tpmm;
-   tpmm.dirprodtrace(dpm);
-/*
    TPSPnsM tpspnsm;
    tpspnsm.reorder(dpm);
 
-   TPTPM tpmm;
+   TPTPnsM tpmm;
    tpmm.square(tpspnsm);
-*/
+
    TPSPM tpspm;
    tpspm.bar(1.0/(Tools::gN() - 1.0),tpmm);
 
@@ -605,7 +601,7 @@ void Hessian::T(const DPM &dpm){
          h = TPM::gt2s(L,1);
 
          //first direct product term:
-         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * tpmm(i,j);
+         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * ( tpmm(I,K,J,L) + tpmm(I,L,J,K) );
 
          if(I == J){
 

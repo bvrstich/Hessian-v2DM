@@ -217,3 +217,43 @@ void TPSPM::bar(double scale,const Hessian &H){
    }
 
 }
+
+/**
+ * construct the TPSPM object by tracing a TPTPnsM object
+ * @param tpmm input TPTPnsM
+ * @param scale scalefactor
+ */
+void TPSPM::bar(double scale,const TPTPnsM &tpmm){
+
+   int I,J;
+
+   int a,b,c,d,e,z;
+
+   for(int i = 0;i < gm();++i){
+
+      I = Hessian::ghess2t(i,0);
+      J = Hessian::ghess2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = 0;j < gn();++j){
+
+         e = spmm2s[j][0];
+         z = spmm2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int l = 0;l < Tools::gM();++l)
+            (*this)(i,j) += tpmm(a,b,e,l,c,d,z,l) + tpmm(a,b,z,l,c,d,e,l);
+
+         (*this)(i,j) *= scale;
+
+      }
+
+   }
+
+}

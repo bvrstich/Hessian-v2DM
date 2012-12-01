@@ -50,41 +50,6 @@ int main(void) {
 
    Newton::init();
 
-   DPM dpm;
-   dpm.fill_Random();
-
-   ofstream out("slow.out");
-   out.precision(10);
-
-   Hessian H;
-   H.dirprodtrace(dpm);
-
-   out << H;
-
-   TPSPnsM tpspnsm;
-   tpspnsm.reorder(dpm);
-
-   TPTPnsM tpmm;
-   tpmm.square(tpspnsm);
-
-   int I,J,K,L;
-
-   for(unsigned int i = 0;i < Hessian::gn();++i){
-
-      I = Hessian::ghess2t(i,0);
-      J = Hessian::ghess2t(i,1);
-
-      for(unsigned int j = 0;j < Hessian::gn();++j){
-
-         K = Hessian::ghess2t(j,0);
-         L = Hessian::ghess2t(j,1);
-
-         //first direct product term:
-         cout <<  i << "\t" << j << "\t|\t" << I << "\t" << J << "\t" << K << "\t" << L << "\t" << tpmm(I,K,J,L) + tpmm(I,L,J,K) << endl;
-
-      }
-   }
-/*
    Newton newton;
 
    //hamiltoniaan
@@ -104,7 +69,7 @@ int main(void) {
    int tot_iter = 0;
 
    //outer iteration: scaling of the potential barrier
-   while(t > 1.0e-12){
+   //while(t > 1.0e-12){
 
       cout << t << "\t" << rdm.trace() << "\t" << rdm.ddot(ham) << "\t";
 
@@ -114,7 +79,7 @@ int main(void) {
 
       //inner iteration: 
       //Newton's method for finding the minimum of the current potential
-      while(convergence > tolerance){
+      //while(convergence > tolerance){
 
          ++nr_newton_iter;
 
@@ -139,7 +104,7 @@ int main(void) {
 
          convergence = a*a*delta.ddot(delta);
 
-      }
+//      }
 
       cout << nr_newton_iter << endl;
 
@@ -165,7 +130,7 @@ int main(void) {
 
       tot_iter += nr_newton_iter;
 
-   }
+//   }
 
    cout << endl;
 
@@ -175,7 +140,7 @@ int main(void) {
 
    cout << endl;
    cout << "Total nr of Newton steps = " << tot_iter << endl;
-*/
+
    Newton::clear();
 
    PHSPM::clear();

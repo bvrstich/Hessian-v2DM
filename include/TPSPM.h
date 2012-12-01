@@ -8,6 +8,8 @@
 using std::ostream;
 using std::vector;
 
+class TPTPnsM;
+
 #include "RecMat.h"
 
 /**
@@ -40,6 +42,8 @@ class TPSPM : public RecMat {
       void dirprodtrace(double,const TPM &);
 
       void bar(double,const Hessian &);
+
+      void bar(double,const TPTPnsM &);
 
       static int gspmm2s(int,int);
 
