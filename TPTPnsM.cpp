@@ -144,7 +144,6 @@ double TPTPnsM::operator()(int a,int b,int c,int d,int e,int z,int t,int h) cons
  */
 void TPTPnsM::square(const TPSPnsM &tpspnsm){
 
-   //en tenslotte de laatste matrixvermenigvuldiging
    char transA = 'N';
    char transB = 'T';
 

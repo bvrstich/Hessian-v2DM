@@ -380,10 +380,35 @@ void Hessian::Q(const TPM &Q){
  */
 void Hessian::G(const PHM &G){
 
+   int M = Tools::gM();
+   int M2 = M * M;
+   int M3 = M2 * M;
+   int M4 = M3 * M;
+   int M5 = M4 * M;
+
+   //for more efficiency: move G to array
    double const *Gv = G.gMatrix()[0];
 
-   int M = Tools::gM();
+   //instead of using new class for direct product trace of G, do it here and know
+   double *Gdpt = new double [M3*M3];
 
+   //first square G
+   char transA = 'N';
+   char transB = 'T';
+
+   double alpha = 1.0;
+   double beta = 0.0;
+
+   int m = M3;
+   int n = M;
+
+   dgemm_(&transA,&transB,&m,&m,&n,&alpha,Gv,&m,Gv,&m,&beta,Gdpt,&m);
+
+   double ward = 2.0/(Tools::gN() - 1.0);
+   int inc = 1;
+
+   dscal_(&m,&ward,Gdpt,&inc);
+ 
    PHSPM phspm;
    phspm.dirprodtrace(2.0/(Tools::gN() - 1.0),G);
 
@@ -420,37 +445,37 @@ void Hessian::G(const PHM &G){
          //first 16 direct product terms of the PHM object
          (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * (
 
-            Gv[e*M*M*M + h*M*M + a*M + d] * Gv[t*M*M*M + z*M*M + c *M + b] + Gv[t*M*M*M + z*M*M + a*M + d] * Gv[e*M*M*M + h*M*M + c *M + b]
+            Gv[e*M3 + h*M2 + a*M + d] * Gv[t*M3 + z*M2 + c *M + b] + Gv[t*M3 + z*M2 + a*M + d] * Gv[e*M3 + h*M2+ c *M + b]
 
-            - Gv[z*M*M*M + h*M*M + a*M + d] * Gv[t*M*M*M + e*M*M + c *M + b] - Gv[t*M*M*M + e*M*M + a*M + d] * Gv[z*M*M*M + h*M*M + c *M + b]
+            - Gv[z*M3 + h*M2 + a*M + d] * Gv[t*M3 + e*M2 + c *M + b] - Gv[t*M3 + e*M2 + a*M + d] * Gv[z*M3 + h*M2 + c *M + b]
             
-            - Gv[e*M*M*M + t*M*M + a*M + d] * Gv[h*M*M*M + z*M*M + c *M + b] - Gv[h*M*M*M + z*M*M + a*M + d] * Gv[e*M*M*M + t*M*M + c *M + b]
+            - Gv[e*M3 + t*M2 + a*M + d] * Gv[h*M3 + z*M2 + c *M + b] - Gv[h*M3 + z*M2 + a*M + d] * Gv[e*M3 + t*M2 + c *M + b]
 
-            + Gv[z*M*M*M + t*M*M + a*M + d] * Gv[h*M*M*M + e*M*M + c *M + b] + Gv[h*M*M*M + e*M*M + a*M + d] * Gv[z*M*M*M + t*M*M + c *M + b]
+            + Gv[z*M3 + t*M2 + a*M + d] * Gv[h*M3 + e*M2 + c *M + b] + Gv[h*M3 + e*M2 + a*M + d] * Gv[z*M3 + t*M2 + c *M + b]
 
-            - Gv[e*M*M*M + h*M*M + b*M + d] * Gv[t*M*M*M + z*M*M + c *M + a] - Gv[t*M*M*M + z*M*M + b*M + d] * Gv[e*M*M*M + h*M*M + c *M + a]
+            - Gv[e*M3 + h*M2 + b*M + d] * Gv[t*M3 + z*M2 + c *M + a] - Gv[t*M3 + z*M2 + b*M + d] * Gv[e*M3 + h*M2 + c *M + a]
 
-            + Gv[z*M*M*M + h*M*M + b*M + d] * Gv[t*M*M*M + e*M*M + c *M + a] + Gv[t*M*M*M + e*M*M + b*M + d] * Gv[z*M*M*M + h*M*M + c *M + a]
+            + Gv[z*M3 + h*M2 + b*M + d] * Gv[t*M3 + e*M2 + c *M + a] + Gv[t*M3 + e*M2 + b*M + d] * Gv[z*M3 + h*M2 + c *M + a]
 
-            + Gv[e*M*M*M + t*M*M + b*M + d] * Gv[h*M*M*M + z*M*M + c *M + a] + Gv[h*M*M*M + z*M*M + b*M + d] * Gv[e*M*M*M + t*M*M + c *M + a]
+            + Gv[e*M3 + t*M2 + b*M + d] * Gv[h*M3 + z*M2 + c *M + a] + Gv[h*M3 + z*M2 + b*M + d] * Gv[e*M3 + t*M2 + c *M + a]
 
-            - Gv[z*M*M*M + t*M*M + b*M + d] * Gv[h*M*M*M + e*M*M + c *M + a] - Gv[h*M*M*M + e*M*M + b*M + d] * Gv[z*M*M*M + t*M*M + c *M + a]
+            - Gv[z*M3 + t*M2 + b*M + d] * Gv[h*M3 + e*M2 + c *M + a] - Gv[h*M3 + e*M2 + b*M + d] * Gv[z*M3 + t*M2 + c *M + a]
 
-            - Gv[e*M*M*M + h*M*M + a*M + c] * Gv[t*M*M*M + z*M*M + d *M + b] - Gv[t*M*M*M + z*M*M + a*M + c] * Gv[e*M*M*M + h*M*M + d *M + b]
+            - Gv[e*M3 + h*M2 + a*M + c] * Gv[t*M3 + z*M2 + d *M + b] - Gv[t*M3 + z*M2 + a*M + c] * Gv[e*M3 + h*M2 + d *M + b]
 
-            + Gv[z*M*M*M + h*M*M + a*M + c] * Gv[t*M*M*M + e*M*M + d *M + b] + Gv[t*M*M*M + e*M*M + a*M + c] * Gv[z*M*M*M + h*M*M + d *M + b]
+            + Gv[z*M3 + h*M2 + a*M + c] * Gv[t*M3 + e*M2 + d *M + b] + Gv[t*M3 + e*M2 + a*M + c] * Gv[z*M3 + h*M2 + d *M + b]
 
-            + Gv[e*M*M*M + t*M*M + a*M + c] * Gv[h*M*M*M + z*M*M + d *M + b] + Gv[h*M*M*M + z*M*M + a*M + c] * Gv[e*M*M*M + t*M*M + d *M + b]
+            + Gv[e*M3 + t*M2 + a*M + c] * Gv[h*M3 + z*M2 + d *M + b] + Gv[h*M3 + z*M2 + a*M + c] * Gv[e*M3 + t*M2 + d *M + b]
 
-            - Gv[z*M*M*M + t*M*M + a*M + c] * Gv[h*M*M*M + e*M*M + d *M + b] - Gv[h*M*M*M + e*M*M + a*M + c] * Gv[z*M*M*M + t*M*M + d *M + b]
+            - Gv[z*M3 + t*M2 + a*M + c] * Gv[h*M3 + e*M2 + d *M + b] - Gv[h*M3 + e*M2 + a*M + c] * Gv[z*M3 + t*M2 + d *M + b]
 
-            + Gv[e*M*M*M + h*M*M + b*M + c] * Gv[t*M*M*M + z*M*M + d *M + a] + Gv[t*M*M*M + z*M*M + b*M + c] * Gv[e*M*M*M + h*M*M + d *M + a]
+            + Gv[e*M3 + h*M2 + b*M + c] * Gv[t*M3 + z*M2 + d *M + a] + Gv[t*M3 + z*M2 + b*M + c] * Gv[e*M3 + h*M2 + d *M + a]
 
-            - Gv[z*M*M*M + h*M*M + b*M + c] * Gv[t*M*M*M + e*M*M + d *M + a] - Gv[t*M*M*M + e*M*M + b*M + c] * Gv[z*M*M*M + h*M*M + d *M + a]
+            - Gv[z*M3 + h*M2 + b*M + c] * Gv[t*M3 + e*M2 + d *M + a] - Gv[t*M3 + e*M2 + b*M + c] * Gv[z*M3 + h*M2 + d *M + a]
             
-            - Gv[e*M*M*M + t*M*M + b*M + c] * Gv[h*M*M*M + z*M*M + d *M + a] - Gv[h*M*M*M + z*M*M + b*M + c] * Gv[e*M*M*M + t*M*M + d *M + a]
+            - Gv[e*M3 + t*M2 + b*M + c] * Gv[h*M3 + z*M2 + d *M + a] - Gv[h*M3 + z*M2 + b*M + c] * Gv[e*M3 + t*M2 + d *M + a]
 
-            + Gv[z*M*M*M + t*M*M + b*M + c] * Gv[h*M*M*M + e*M*M + d *M + a] + Gv[h*M*M*M + e*M*M + b*M + c] * Gv[z*M*M*M + t*M*M + d *M + a] );
+            + Gv[z*M3 + t*M2 + b*M + c] * Gv[h*M3 + e*M2 + d *M + a] + Gv[h*M3 + e*M2 + b*M + c] * Gv[z*M3 + t*M2 + d *M + a] );
 
          if(b == d){
 
@@ -515,6 +540,8 @@ void Hessian::G(const PHM &G){
       }
 
    }
+
+   delete [] Gdpt;
 
 }
 
