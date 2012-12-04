@@ -213,6 +213,15 @@ double **Matrix::gMatrix(){
 }
 
 /**
+ * @return the underlying pointer to matrix, useful for mkl applications
+ */
+double** const Matrix::gMatrix() const{
+
+   return matrix;
+
+}
+
+/**
  * @return the dimension of the matrix
  */
 int Matrix::gn() const{

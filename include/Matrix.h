@@ -66,6 +66,8 @@ class Matrix{
       double operator()(int i,int j) const;
 
       //get the pointer to the matrix
+      double** const gMatrix() const;
+
       double **gMatrix();
 
       int gn() const;
