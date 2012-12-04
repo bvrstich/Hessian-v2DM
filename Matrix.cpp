@@ -197,7 +197,7 @@ double &Matrix::operator()(int i,int j){
  * @param j column number
  * @return the entry on place i,j
  */
-double Matrix::operator()(int i,int j) const {
+const double &Matrix::operator()(int i,int j) const {
 
    return matrix[j][i];
 

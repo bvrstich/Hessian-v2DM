@@ -63,7 +63,7 @@ class Matrix{
       double &operator()(int i,int j);
 
       //easy to access the numbers
-      double operator()(int i,int j) const;
+      const double &operator()(int i,int j) const;
 
       //get the pointer to the matrix
       double **gMatrix();

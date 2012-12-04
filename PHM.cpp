@@ -96,7 +96,7 @@ double &PHM::operator()(int a,int b,int c,int d){
  * @param d second sp index that forms the ph column index j together with c
  * @return the number on place PHM(i,j)
  */
-double PHM::operator()(int a,int b,int c,int d) const
+const double &PHM::operator()(int a,int b,int c,int d) const
 {
    int i = s2ph[a][b];
    int j = s2ph[c][d];

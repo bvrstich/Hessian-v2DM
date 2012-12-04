@@ -45,7 +45,7 @@ class PHM : public Matrix {
       using Matrix::operator();
 
       //easy to access the numbers, in sp mode
-      double operator()(int a,int b,int c,int d) const;
+      const double &operator()(int a,int b,int c,int d) const;
 
       //change the numbers in sp mode
       double &operator()(int a,int b,int c,int d);
