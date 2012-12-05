@@ -26,8 +26,6 @@
 #define __G_CON
 #define __T2_CON
 
-#include "PPHM.h"
-
 #endif
 
 #ifdef PQGT
@@ -36,8 +34,6 @@
 #define __G_CON
 #define __T1_CON
 #define __T2_CON
-
-#include "PPHM.h"
 
 #endif
 
@@ -49,6 +45,7 @@
 #include "SPM.h"
 #include "PHM.h"
 #include "DPM.h"
+#include "PPHM.h"
 
 #include "Hessian.h"
 #include "TPSPM.h"
