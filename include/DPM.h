@@ -45,6 +45,8 @@ class DPM : public Matrix {
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d,int e,int f) const;
 
+      const double &ordacc(int,int,int,int,int,int) const;
+
       //generalized T1 map
       void T(double,double,double,const TPM &);
 

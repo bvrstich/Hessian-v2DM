@@ -351,4 +351,14 @@ void DPM::hat(const TPM &tpm)
 
 }
 
+/**
+ * access the numbers of the DPM matrix in sp mode, but where the input sp indices
+ * are ordered (a < b < c, d < e < z) so that no if statements and other bullcrap is needed.
+ */
+const double &DPM::ordacc(int a,int b,int c,int d,int e,int z) const {
+   
+   return   (*this)(s2dp[a][b][c],s2dp[d][e][z]);
+
+}
+
 /* vim: set ts=3 sw=3 expandtab :*/

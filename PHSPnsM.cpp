@@ -52,7 +52,7 @@ void PHSPnsM::init(){
  */
 void PHSPnsM::clear(){
 
-   for(int i = 0;i < TPM::gn();++i)
+   for(int i = 0;i < PHM::gn();++i)
       delete [] ph2phmm[i];
 
    delete [] ph2phmm;
@@ -129,5 +129,29 @@ void PHSPnsM::reorder(const PPHM &pphm){
 
       }
    }
+
+}
+
+/**
+ * access to the lists from outside of the class
+ */
+int PHSPnsM::gphmm2ph(int i,int option){
+
+   return phmm2ph[i][option];
+
+}
+
+int PHSPnsM::gph2phmm(int I,int J){
+
+   return ph2phmm[I][J];
+
+}
+
+/**
+ * @return the size of the phphm space
+ */
+int PHSPnsM::gphmmdim(){
+
+   return phmm2ph.size();
 
 }

@@ -39,6 +39,12 @@ class PHSPnsM : public RecMat {
 
       void reorder(const PPHM &);
 
+      static int gphmm2ph(int,int);
+
+      static int gph2phmm(int,int);
+
+      static int gphmmdim();
+
       static void init();
 
       static void clear();

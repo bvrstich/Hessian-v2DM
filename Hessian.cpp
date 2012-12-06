@@ -286,7 +286,7 @@ void Hessian::Q(const TPM &Q){
 
             if(e == t)
                (*this)(i,j) -= Newton::gnorm(j) * Q2bar(z,h);
-            
+
             if(z == t)
                (*this)(i,j) += Newton::gnorm(j) * Q2bar(e,h);
 
@@ -415,22 +415,22 @@ void Hessian::G(const PHM &G){
 
          //first 16 direct product terms of the PHM object
          (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * (
-         
-            G(a,d,e,h) * G(c,b,t,z) + G(a,d,t,z) * G(c,b,e,h) - G(a,d,z,h) * G(c,b,t,e) - G(a,d,t,e) * G(c,b,z,h)
 
-            - G(a,d,e,t) * G(c,b,h,z) - G(a,d,h,z) * G(c,b,e,t) + G(a,d,z,t) * G(c,b,h,e) + G(a,d,h,e) * G(c,b,z,t)
+               G(a,d,e,h) * G(c,b,t,z) + G(a,d,t,z) * G(c,b,e,h) - G(a,d,z,h) * G(c,b,t,e) - G(a,d,t,e) * G(c,b,z,h)
 
-            - G(b,d,e,h) * G(c,a,t,z) - G(b,d,t,z) * G(c,a,e,h) + G(b,d,z,h) * G(c,a,t,e) + G(b,d,t,e) * G(c,a,z,h)
+               - G(a,d,e,t) * G(c,b,h,z) - G(a,d,h,z) * G(c,b,e,t) + G(a,d,z,t) * G(c,b,h,e) + G(a,d,h,e) * G(c,b,z,t)
 
-            + G(b,d,e,t) * G(c,a,h,z) + G(b,d,h,z) * G(c,a,e,t) - G(b,d,z,t) * G(c,a,h,e) - G(b,d,h,e) * G(c,a,z,t)
+               - G(b,d,e,h) * G(c,a,t,z) - G(b,d,t,z) * G(c,a,e,h) + G(b,d,z,h) * G(c,a,t,e) + G(b,d,t,e) * G(c,a,z,h)
 
-            - G(a,c,e,h) * G(d,b,t,z) - G(a,c,t,z) * G(d,b,e,h) + G(a,c,z,h) * G(d,b,t,e) + G(a,c,t,e) * G(d,b,z,h)
+               + G(b,d,e,t) * G(c,a,h,z) + G(b,d,h,z) * G(c,a,e,t) - G(b,d,z,t) * G(c,a,h,e) - G(b,d,h,e) * G(c,a,z,t)
 
-            + G(a,c,e,t) * G(d,b,h,z) + G(a,c,h,z) * G(d,b,e,t) - G(a,c,z,t) * G(d,b,h,e) - G(a,c,h,e) * G(d,b,z,t)
+               - G(a,c,e,h) * G(d,b,t,z) - G(a,c,t,z) * G(d,b,e,h) + G(a,c,z,h) * G(d,b,t,e) + G(a,c,t,e) * G(d,b,z,h)
 
-            + G(b,c,e,h) * G(d,a,t,z) + G(b,c,t,z) * G(d,a,e,h) - G(b,c,z,h) * G(d,a,t,e) - G(b,c,t,e) * G(d,a,z,h)
+               + G(a,c,e,t) * G(d,b,h,z) + G(a,c,h,z) * G(d,b,e,t) - G(a,c,z,t) * G(d,b,h,e) - G(a,c,h,e) * G(d,b,z,t)
 
-            - G(b,c,e,t) * G(d,a,h,z) - G(b,c,h,z) * G(d,a,e,t) + G(b,c,z,t) * G(d,a,h,e) + G(b,c,h,e) * G(d,a,z,t) );
+               + G(b,c,e,h) * G(d,a,t,z) + G(b,c,t,z) * G(d,a,e,h) - G(b,c,z,h) * G(d,a,t,e) - G(b,c,t,e) * G(d,a,z,h)
+
+               - G(b,c,e,t) * G(d,a,h,z) - G(b,c,h,z) * G(d,a,e,t) + G(b,c,z,t) * G(d,a,h,e) + G(b,c,h,e) * G(d,a,z,t) );
 
          if(b == d){
 
@@ -503,7 +503,9 @@ void Hessian::G(const PHM &G){
  * @param dpm input DPM object
  */
 void Hessian::dirprodtrace(const DPM &dpm){
-   
+
+   int M = Tools::gM();
+
    int I,J,K,L;
 
    int a,b,c,d;
@@ -520,24 +522,382 @@ void Hessian::dirprodtrace(const DPM &dpm){
       c = TPM::gt2s(J,0);
       d = TPM::gt2s(J,1);
 
-      for(unsigned int j = i;j < hess2t.size();++j){
+      if(b <= c){
 
-         K = hess2t[j][0];
-         L = hess2t[j][1];
+         for(unsigned int j = i;j < hess2t.size();++j){
 
-         e = TPM::gt2s(K,0);
-         z = TPM::gt2s(K,1);
+            K = hess2t[j][0];
+            L = hess2t[j][1];
 
-         t = TPM::gt2s(L,0);
-         h = TPM::gt2s(L,1);
+            e = TPM::gt2s(K,0);
+            z = TPM::gt2s(K,1);
 
-         (*this)(i,j) = 0.0;
+            t = TPM::gt2s(L,0);
+            h = TPM::gt2s(L,1);
 
-         for(int k = 0;k < Tools::gM();++k)
-            for(int l = 0;l < Tools::gM();++l)
-               (*this)(i,j) += dpm(a,b,k,e,z,l) * dpm(c,d,k,t,h,l) + dpm(a,b,k,t,h,l) * dpm(c,d,k,e,z,l);
+            (*this)(i,j) = 0.0;
+
+            if(z <= t){
+
+               for(int k = 0;k < a;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(k,a,b,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,e,z,l) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(k,a,b,e,z,l) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(k,a,b,t,l,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(k,a,b,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = a + 1;k < b;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,k,b,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,e,z,l) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,k,b,e,z,l) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,k,b,t,l,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,k,b,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = b + 1;k < c;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = c + 1;k < d;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,l,e,z);
+
+                  for(int l = e + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,e,l,z);
+
+                  for(int l = z + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,e,z,l);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,k,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,k,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,k,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,k,d,e,z,l);
+
+               }
+
+               for(int k = d + 1;k < M;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+
+                  for(int l = e + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+
+                  for(int l = z + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+
+               }
+
+            }
+            else if(z <= h){
+
+               for(int k = 0;k < a;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(k,a,b,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = t + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,e,l,z) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(k,a,b,t,l,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(k,a,b,e,z,l) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(k,a,b,t,l,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(k,a,b,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = a + 1;k < b;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,k,b,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = t + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,e,l,z) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,k,b,t,l,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,k,b,e,z,l) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,k,b,t,l,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,k,b,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = b + 1;k < c;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = t + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(k,c,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = c + 1;k < d;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,e,l,z);
+
+                  for(int l = t + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,k,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,k,d,e,l,z);
+
+                  for(int l = z + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,k,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,k,d,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,k,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,k,d,e,z,l);
+
+               }
+
+               for(int k = d + 1;k < M;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+
+                  for(int l = t + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+
+                  for(int l = z + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+
+                  for(int l = h + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+
+               }
+
+            }
+            else{
+
+               for(int k = 0;k < a;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(k,a,b,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,e,l,z) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(k,a,b,t,l,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = h + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(k,a,b,e,l,z) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(k,a,b,t,h,l) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < M;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(k,a,b,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = a + 1;k < b;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,k,b,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,k,b,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,e,l,z) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,k,b,t,l,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = h + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,k,b,e,l,z) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,k,b,t,h,l) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,k,b,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,k,b,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = b + 1;k < c;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(k,c,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = h + 1;l < z;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(k,c,d,e,l,z);
+
+                  for(int l = z + 1;l < M;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(k,c,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(k,c,d,e,z,l);
+
+               }
+
+               for(int k = c + 1;k < d;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,k,d,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,k,d,e,l,z);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,k,d,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,k,d,e,l,z);
+
+                  for(int l = h + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,k,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,k,d,e,l,z);
+
+                  for(int l = z + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,k,d,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,k,d,e,z,l);
+
+               }
+
+               for(int k = d + 1;k < M;++k){
+
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+
+                  for(int l = e + 1;l < t;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+
+                  for(int l = t + 1;l < h;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+
+                  for(int l = h + 1;l < z;++l)
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
+
+                  for(int l = z + 1;l < M;++l)
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+
+               }
+
+            }
+
+         }
 
       }
+      else if(b <= d){
+
+         for(unsigned int j = i;j < hess2t.size();++j){
+
+            K = hess2t[j][0];
+            L = hess2t[j][1];
+
+            e = TPM::gt2s(K,0);
+            z = TPM::gt2s(K,1);
+
+            t = TPM::gt2s(L,0);
+            h = TPM::gt2s(L,1);
+
+            (*this)(i,j) = 0.0;
+
+            if(z <= t){
+
+               for(int k = 0;k < a;++k)
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+            }
+            else if(z <= h){
+
+            }
+            else{
+
+            }
+
+         }
+
+      }
+      else{
+         for(unsigned int j = i;j < hess2t.size();++j){
+
+            K = hess2t[j][0];
+            L = hess2t[j][1];
+
+            e = TPM::gt2s(K,0);
+            z = TPM::gt2s(K,1);
+
+            t = TPM::gt2s(L,0);
+            h = TPM::gt2s(L,1);
+
+            (*this)(i,j) = 0.0;
+
+            if(z <= t){
+
+               for(int k = 0;k < a;++k)
+                  for(int l = 0;l < e;++l)
+                     (*this)(i,j) += dpm.ordacc(k,a,b,l,e,z) * dpm.ordacc(k,c,d,l,t,h) + dpm.ordacc(k,a,b,l,t,h) * dpm.ordacc(k,c,d,l,e,z);
+
+            }
+            else if(z <= h){
+
+            }
+            else{
+
+            }
+
+         }
+      }
+
    }
 
    this->symmetrize();
@@ -572,7 +932,7 @@ void Hessian::T(const DPM &dpm){
    T2barbar.bar(0.5/(Tools::gN() - 1.0),T2bar);
 
    double trace = 4.0/ ( Tools::gN() * Tools::gN() * (Tools::gN() - 1.0) * (Tools::gN() - 1.0) ) * T2.trace();
-   
+
    int I,J,K,L;
 
    int a,b,c,d;

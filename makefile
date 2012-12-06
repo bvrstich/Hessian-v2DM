@@ -26,6 +26,7 @@ CPPSRC	= pr_sdp.cpp\
             TPTPnsM.cpp\
             TPSPnsM.cpp\
             PHSPnsM.cpp\
+            PHPHnsM.cpp\
             Newton.cpp
 
 OBJ	= $(CPPSRC:.cpp=.o)
@@ -46,7 +47,7 @@ CXX	= g++
 # -----------------------------------------------------------------------------
 #   Compiler & Linker flags
 # -----------------------------------------------------------------------------
-CFLAGS	= -I$(INCLUDE) -g -Wall -O3 -flto
+CFLAGS	= -I$(INCLUDE) -g -Wall -O3 -flto 
 LDFLAGS	= -g -Wall -O3 -flto
 
 
