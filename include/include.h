@@ -53,6 +53,7 @@
 #include "SPSPM.h"
 #include "TPTPnsM.h"
 #include "TPSPnsM.h"
+#include "PHSPnsM.h"
 
 #include "SUP.h"
 #include "EIG.h"
