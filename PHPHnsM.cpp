@@ -78,7 +78,6 @@ double PHPHnsM::operator()(int a,int b,int c,int d,int e,int z,int t,int h) cons
  */
 void PHPHnsM::square(const PHSPnsM &phspnsm){
 
-   //en tenslotte de laatste matrixvermenigvuldiging
    char transA = 'N';
    char transB = 'T';
 

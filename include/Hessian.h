@@ -62,6 +62,8 @@ class Hessian : public Matrix {
 
       void dirprodtrace(const DPM &);
 
+      void dpt_slow(const DPM &);
+
       static int gn();
 
       static int ghess2t(int,int);

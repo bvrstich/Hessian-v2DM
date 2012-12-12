@@ -140,14 +140,40 @@ double Hessian::operator()(int I,int J,int K,int L) const{
 
 ostream &operator<<(ostream &output,const Hessian &hess_p){
 
-   for(int i = 0;i < hess_p.gn();++i)
-      for(int j = 0;j < hess_p.gn();++j){
+   int I,J,K,L;
 
-         output << i << "\t" << j << "\t|\t" << hess_p.hess2t[i][0] << "\t" << hess_p.hess2t[i][1]
+   int a,b,c,d;
+   int e,z,t,h;
 
-            << "\t" << hess_p.hess2t[j][0] << "\t" << hess_p.hess2t[j][1] << "\t" << hess_p(i,j) << endl;
+   for(unsigned int i = 0;i < hess_p.hess2t.size();++i){
+
+      I = hess_p.hess2t[i][0];
+      J = hess_p.hess2t[i][1];
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(unsigned int j = i;j < hess_p.hess2t.size();++j){
+
+         K = hess_p.hess2t[j][0];
+         L = hess_p.hess2t[j][1];
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         output << i << "\t" << j << "\t|\t" << I << "\t" << J << "\t" << K << "\t" << L << "\t|\t" << 
+         
+            "(" << a << "," << b << "," << c << "," << d << ")\t(" << e << "," << z << "," << t << "," << h << ")\t|\t" << hess_p(i,j) << endl;
 
       }
+
+   }
 
    return output;
 
@@ -618,19 +644,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = d + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < z;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < t;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = t + 1;l < h;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = h + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -716,19 +742,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = d + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < t;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = t + 1;l < z;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < h;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = h + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -814,19 +840,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = d + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < t;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = t + 1;l < h;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = h + 1;l < z;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -931,19 +957,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = d + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < z;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < t;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = t + 1;l < h;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = h + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -1029,19 +1055,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = d + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < t;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = t + 1;l < z;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < h;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = h + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -1127,19 +1153,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = d + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < t;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = t + 1;l < h;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = h + 1;l < z;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -1244,19 +1270,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = b + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < z;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < t;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = t + 1;l < h;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = h + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -1342,19 +1368,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = b + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < t;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = t + 1;l < z;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < h;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,z,l);
 
                   for(int l = h + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -1440,19 +1466,19 @@ void Hessian::dirprodtrace(const DPM &dpm){
                for(int k = b + 1;k < M;++k){
 
                   for(int l = 0;l < e;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,l,e,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,l,e,z);
 
                   for(int l = e + 1;l < t;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,l,t,h) + dpm.ordacc(a,b,k,l,t,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = t + 1;l < h;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,l,h) + dpm.ordacc(a,b,k,t,l,h) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = h + 1;l < z;++l)
-                     (*this)(i,j) += dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
+                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,l,z) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,l,z);
 
                   for(int l = z + 1;l < M;++l)
-                     (*this)(i,j) -= dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
+                     (*this)(i,j) += dpm.ordacc(a,b,k,e,z,l) * dpm.ordacc(c,d,k,t,h,l) + dpm.ordacc(a,b,k,t,h,l) * dpm.ordacc(c,d,k,e,z,l);
 
                }
 
@@ -1474,11 +1500,8 @@ void Hessian::dirprodtrace(const DPM &dpm){
  */
 void Hessian::T(const DPM &dpm){
 
-   TPSPnsM tpspnsm;
-   tpspnsm.reorder(dpm);
-
-   TPTPnsM tpmm;
-   tpmm.square(tpspnsm);
+   Hessian tpmm;
+   tpmm.dirprodtrace(dpm);
 
    TPSPM tpspm;
    tpspm.bar(1.0/(Tools::gN() - 1.0),tpmm);
@@ -1525,7 +1548,7 @@ void Hessian::T(const DPM &dpm){
          h = TPM::gt2s(L,1);
 
          //first direct product term:
-         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * ( tpmm(I,K,J,L) + tpmm(I,L,J,K) );
+         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * tpmm(i,j);
 
          if(I == J){
 
@@ -1618,6 +1641,53 @@ void Hessian::T(const DPM &dpm){
 
          if(e == t)
             (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,z,h);
+
+      }
+   }
+
+   this->symmetrize();
+
+}
+
+/**
+ * double trace of direct product of two DPM matrices, the slow version for checking purposes
+ */
+void Hessian::dpt_slow(const DPM &dpm){
+
+   int M = Tools::gM();
+
+   int I,J,K,L;
+
+   int a,b,c,d;
+   int e,z,t,h;
+
+   for(unsigned int i = 0;i < hess2t.size();++i){
+
+      I = hess2t[i][0];
+      J = hess2t[i][1];
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(unsigned int j = i;j < hess2t.size();++j){
+
+         K = hess2t[j][0];
+         L = hess2t[j][1];
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         (*this)(i,j) = 0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = 0;l < M;++l)
+               (*this)(i,j) += dpm(a,b,k,e,z,l) * dpm(c,d,k,t,h,l) + dpm(a,b,k,t,h,l) * dpm(c,d,k,e,z,l);
 
       }
    }
