@@ -48,7 +48,9 @@ class TPTPM : public Matrix {
       //access to the numbers in tp mode
       double operator()(int I,int J,int K,int L) const;
 
-      void dirprodtrace(const DPM &);
+      void dp(const PHM &);
+
+      void dpt2(const DPM &);
 
       static int gn();
 

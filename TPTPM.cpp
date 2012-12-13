@@ -211,7 +211,7 @@ int TPTPM::gtpmm2t(int i,int option){
  * Fills a TPTPM object with the two-times traced symmetric direct product of a DPM object.
  * @param dpm input DPM object
  */
-void TPTPM::dirprodtrace(const DPM &dpm){
+void TPTPM::dpt2(const DPM &dpm){
 
    int M = Tools::gM();
 
@@ -1168,6 +1168,62 @@ void TPTPM::dirprodtrace(const DPM &dpm){
             }
          
          }
+
+      }
+
+   }
+
+   this->symmetrize();
+
+}
+
+/**
+ * construct the antisymmetrized "symmetric direct product" of two PHM matrix
+ */
+void TPTPM::dp(const PHM &phm){ 
+
+   int I,J,K,L;
+
+   int a,b,c,d,e,z,t,h;
+
+   for(int i = 0;i < TPTPM::gn();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = i;j < TPTPM::gn();++j){
+
+         K = TPTPM::gtpmm2t(j,0);
+         L = TPTPM::gtpmm2t(j,1);
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         //first 16 direct product terms of the PHM object
+         (*this)(i,j) += phm(a,d,e,h) * phm(c,b,t,z) + phm(a,d,t,z) * phm(c,b,e,h) - phm(a,d,z,h) * phm(c,b,t,e) - phm(a,d,t,e) * phm(c,b,z,h)
+
+               - phm(a,d,e,t) * phm(c,b,h,z) - phm(a,d,h,z) * phm(c,b,e,t) + phm(a,d,z,t) * phm(c,b,h,e) + phm(a,d,h,e) * phm(c,b,z,t)
+
+               - phm(b,d,e,h) * phm(c,a,t,z) - phm(b,d,t,z) * phm(c,a,e,h) + phm(b,d,z,h) * phm(c,a,t,e) + phm(b,d,t,e) * phm(c,a,z,h)
+
+               + phm(b,d,e,t) * phm(c,a,h,z) + phm(b,d,h,z) * phm(c,a,e,t) - phm(b,d,z,t) * phm(c,a,h,e) - phm(b,d,h,e) * phm(c,a,z,t)
+
+               - phm(a,c,e,h) * phm(d,b,t,z) - phm(a,c,t,z) * phm(d,b,e,h) + phm(a,c,z,h) * phm(d,b,t,e) + phm(a,c,t,e) * phm(d,b,z,h)
+
+               + phm(a,c,e,t) * phm(d,b,h,z) + phm(a,c,h,z) * phm(d,b,e,t) - phm(a,c,z,t) * phm(d,b,h,e) - phm(a,c,h,e) * phm(d,b,z,t)
+
+               + phm(b,c,e,h) * phm(d,a,t,z) + phm(b,c,t,z) * phm(d,a,e,h) - phm(b,c,z,h) * phm(d,a,t,e) - phm(b,c,t,e) * phm(d,a,z,h)
+
+               - phm(b,c,e,t) * phm(d,a,h,z) - phm(b,c,h,z) * phm(d,a,e,t) + phm(b,c,z,t) * phm(d,a,h,e) + phm(b,c,h,e) * phm(d,a,z,t) ;
 
       }
 

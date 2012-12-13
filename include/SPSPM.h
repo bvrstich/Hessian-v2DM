@@ -45,7 +45,7 @@ class SPSPM : public Matrix {
 
       void bar(double,const TPSPM &);
 
-      void bar(double,const PHSPM &);
+      void dpt2(double,const PHM &);
 
    private:
 

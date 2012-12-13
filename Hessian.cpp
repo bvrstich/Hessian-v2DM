@@ -122,7 +122,7 @@ void Hessian::lagr(){
 void Hessian::Q(const TPM &Q){
 
    TPSPM tpspm;
-   tpspm.dirprodtrace(2.0/(Tools::gN() - 1.0),Q);
+   tpspm.dpt(2.0/(Tools::gN() - 1.0),Q);
 
    SPSPM spspm;
    spspm.bar(1.0/(Tools::gN() - 1.0),tpspm);
@@ -269,11 +269,11 @@ void Hessian::Q(const TPM &Q){
  */
 void Hessian::G(const PHM &G){
 
-   PHSPM phspm;
-   phspm.dirprodtrace(2.0/(Tools::gN() - 1.0),G);
+   TPSPM tpspm;
+   tpspm.dpt(2.0/(Tools::gN() - 1.0),G);
 
    SPSPM spspm;
-   spspm.bar(1.0/(Tools::gN() - 1.0),phspm);
+   spspm.dpt2(2.0/( (Tools::gN() - 1.0)*(Tools::gN() - 1.0) ),G);
 
    int I,J,K,L;
 
@@ -324,7 +324,7 @@ void Hessian::G(const PHM &G){
          if(b == d){
 
             //first four PHSPM terms:
-            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(e,h,t,z,a,c) - phspm(z,h,t,e,a,c) - phspm(e,t,h,z,a,c) + phspm(z,t,h,e,a,c) );
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(e,z,t,h,a,c);
 
             //then four SPSPM terms:
             if(z == h)
@@ -341,7 +341,7 @@ void Hessian::G(const PHM &G){
          if(b == c){
 
             //first four PHSPM terms:
-            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(e,h,t,z,a,d) - phspm(z,h,t,e,a,d) - phspm(e,t,h,z,a,d) + phspm(z,t,h,e,a,d) );
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * tpspm(e,z,t,h,a,d);
 
             //then four SPSPM terms
             if(z == h)
@@ -358,7 +358,7 @@ void Hessian::G(const PHM &G){
          if(a == c){
 
             //first four PHSPM terms:
-            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(e,h,t,z,b,d) - phspm(z,h,t,e,b,d) - phspm(e,t,h,z,b,d) + phspm(z,t,h,e,b,d) );
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(e,z,t,h,b,d);
 
             //then four SPSPM terms
             if(z == h)
@@ -373,13 +373,13 @@ void Hessian::G(const PHM &G){
          }
 
          if(z == h)
-            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(a,d,c,b,e,t) - phspm(b,d,c,a,e,t) - phspm(a,c,d,b,e,t) + phspm(b,c,d,a,e,t) );
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,e,t);
 
          if(z == t)
-            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(a,d,c,b,e,h) - phspm(b,d,c,a,e,h) - phspm(a,c,d,b,e,h) + phspm(b,c,d,a,e,h) );
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,e,h);
 
          if(e == t)
-            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * ( phspm(a,d,c,b,z,h) - phspm(b,d,c,a,z,h) - phspm(a,c,d,b,z,h) + phspm(b,c,d,a,z,h) );
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * tpspm(a,b,c,d,z,h);
 
       }
 
@@ -394,7 +394,7 @@ void Hessian::G(const PHM &G){
 void Hessian::T(const DPM &dpm){
 
    TPTPM tpmm;
-   tpmm.dirprodtrace(dpm);
+   tpmm.dpt2(dpm);
 
    TPSPM tpspm;
    tpspm.bar(1.0/(Tools::gN() - 1.0),tpmm);

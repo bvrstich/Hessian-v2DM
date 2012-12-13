@@ -80,28 +80,31 @@ void SPSPM::bar(double scale,const TPSPM &tpspm){
 }
 
 /**
- * construct a SPSPM object by tracing one pair of indices of a PHSPM object
+ * construct a SPSPM object by doing a double trace of the direct product of a PHM matrix
  * @param scale scalefactor for the barred object
- * @param phspm input PHSPM object
+ * @param phm input PHM object
  */
-void SPSPM::bar(double scale,const PHSPM &phspm){
+void SPSPM::dpt2(double scale,const PHM &phm){
 
-   int a,b,c,d;
+   int M = Tools::gM();
+
+   int a,c,e,t;
 
    for(int i = 0;i < gn();++i){
 
       a = TPSPM::gspmm2s(i,0);
-      b = TPSPM::gspmm2s(i,1);
+      c = TPSPM::gspmm2s(i,1);
 
       for(int j = i;j < gn();++j){
 
-         c = TPSPM::gspmm2s(j,0);
-         d = TPSPM::gspmm2s(j,1);
+         e = TPSPM::gspmm2s(j,0);
+         t = TPSPM::gspmm2s(j,1);
 
          (*this)(i,j) = 0.0;
 
-         for(int l = 0;l < Tools::gM();++l)
-            (*this)(i,j) += phspm(a,l,b,l,c,d);
+         for(int l = 0;l < M;++l)
+            for(int k = 0;k < M;++k)
+            (*this)(i,j) += phm(a,k,e,l) * phm(c,k,t,l) + phm(a,k,t,l) * phm(c,k,e,l);
 
          (*this)(i,j) *= scale;
 

@@ -46,7 +46,6 @@ int main(void) {
 
    TPTPM::init();
    TPSPM::init();
-   PHSPM::init();
 
    Newton::init();
 
@@ -143,9 +142,8 @@ int main(void) {
 
    Newton::clear();
 
-   TPTPM::clear();
-   PHSPM::clear();
    TPSPM::clear();
+   TPTPM::clear();
 
    PPHM::clear();
    DPM::clear();

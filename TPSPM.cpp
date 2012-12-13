@@ -135,7 +135,7 @@ int TPSPM::gspmm2s(int i,int option){
  * fill the TPSPM object by tracing out one pair of indices of the direct product of a TPM object with itsself
  * @param scale factor to scale the trace with
  */
-void TPSPM::dirprodtrace(double scale,const TPM &Q){
+void TPSPM::dpt(double scale,const TPM &Q){
 
    int I,J;
 
@@ -214,6 +214,56 @@ void TPSPM::bar(double scale,const TPTPM &tpmm){
 
       }
 
+   }
+
+}
+
+/**
+ * fill the TPSPM object by tracing out one pair of indices of the direct product of a TPM object with itsself
+ * @param scale factor to scale the trace with
+ * @param phm input PHM matrix
+ */
+void TPSPM::dpt(double scale,const PHM &phm){
+
+   int M = Tools::gM();
+
+   int I,J;
+
+   int a,b,c,d,e,z;
+
+   for(int i = 0;i < gm();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = 0;j < gn();++j){
+
+         e = spmm2s[j][0];
+         z = spmm2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int l = 0;l < M;++l){
+
+            (*this)(i,j) += phm(a,d,e,l) * phm(c,b,z,l) + phm(c,b,e,l) * phm(a,d,z,l)
+
+               - phm(b,d,e,l) * phm(c,a,z,l) - phm(c,a,e,l) * phm(b,d,z,l)
+
+               - phm(a,c,e,l) * phm(d,b,z,l) - phm(d,b,e,l) * phm(a,c,z,l)
+
+               + phm(b,c,e,l) * phm(d,a,z,l) + phm(d,a,e,l) * phm(b,c,z,l);
+
+         }
+
+         (*this)(i,j) *= scale;
+
+      }
    }
 
 }

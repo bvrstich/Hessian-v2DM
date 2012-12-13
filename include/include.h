@@ -49,7 +49,6 @@
 
 #include "Hessian.h"
 #include "TPSPM.h"
-#include "PHSPM.h"
 #include "SPSPM.h"
 #include "TPTPM.h"
 

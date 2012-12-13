@@ -39,7 +39,9 @@ class TPSPM : public RecMat {
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d,int e,int z) const;
 
-      void dirprodtrace(double,const TPM &);
+      void dpt(double,const TPM &);
+
+      void dpt(double,const PHM &);
 
       void bar(double,const TPTPM &);
 
