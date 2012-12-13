@@ -8,14 +8,14 @@
 using std::ostream;
 using std::vector;
 
-class TPTPnsM;
+class TPTPM;
 
 #include "RecMat.h"
 
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
- * This class TPSPM is a class written for the singly-traced Hessian matrix object,
+ * This class TPSPM is a class written for the singly-traced TPTPM matrix object,
  * being a rectangular matrix on TP for the rows, and SP for the columns, it inherits alle the function from its mother 
  * RecMat, a rectangular matrix, some special member functions and two lists 
  */
@@ -41,9 +41,7 @@ class TPSPM : public RecMat {
 
       void dirprodtrace(double,const TPM &);
 
-      void bar(double,const Hessian &);
-
-      void bar(double,const TPTPnsM &);
+      void bar(double,const TPTPM &);
 
       static int gspmm2s(int,int);
 

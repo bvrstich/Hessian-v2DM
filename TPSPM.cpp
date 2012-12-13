@@ -62,7 +62,7 @@ void TPSPM::clear(){
 /**
  * standard constructor:
  */
-TPSPM::TPSPM() : RecMat(Hessian::gn(),spmm2s.size()) { }
+TPSPM::TPSPM() : RecMat(TPTPM::gn(),spmm2s.size()) { }
 
 /**
  * copy constructor: constructs RecMat object
@@ -102,7 +102,7 @@ double TPSPM::operator()(int a,int b,int c,int d,int e,int z) const{
       int I = TPM::gs2t(a,b);
       int J = TPM::gs2t(c,d);
 
-      int i = Hessian::gt2hess(I,J);
+      int i = TPTPM::gt2tpmm(I,J);
 
       int j = s2spmm[e][z];
 
@@ -143,8 +143,8 @@ void TPSPM::dirprodtrace(double scale,const TPM &Q){
 
    for(int i = 0;i < gm();++i){
 
-      I = Hessian::ghess2t(i,0);
-      J = Hessian::ghess2t(i,1);
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
 
       a = TPM::gt2s(I,0);
       b = TPM::gt2s(I,1);
@@ -179,11 +179,11 @@ int TPSPM::gspmmdim(){
 }
 
 /**
- * construct the TPSPM object by tracing a Hessian object
- * @param H input hessian
+ * construct the TPSPM object by tracing a TPTPM object
+ * @param tpmm input TPTPM
  * @param scale scalefactor
  */
-void TPSPM::bar(double scale,const Hessian &H){
+void TPSPM::bar(double scale,const TPTPM &tpmm){
 
    int I,J;
 
@@ -191,8 +191,8 @@ void TPSPM::bar(double scale,const Hessian &H){
 
    for(int i = 0;i < gm();++i){
 
-      I = Hessian::ghess2t(i,0);
-      J = Hessian::ghess2t(i,1);
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
 
       a = TPM::gt2s(I,0);
       b = TPM::gt2s(I,1);
@@ -208,47 +208,7 @@ void TPSPM::bar(double scale,const Hessian &H){
          (*this)(i,j) = 0.0;
 
          for(int l = 0;l < Tools::gM();++l)
-            (*this)(i,j) += H(a,b,c,d,e,l,z,l);
-
-         (*this)(i,j) *= scale;
-
-      }
-
-   }
-
-}
-
-/**
- * construct the TPSPM object by tracing a TPTPnsM object
- * @param tpmm input TPTPnsM
- * @param scale scalefactor
- */
-void TPSPM::bar(double scale,const TPTPnsM &tpmm){
-
-   int I,J;
-
-   int a,b,c,d,e,z;
-
-   for(int i = 0;i < gm();++i){
-
-      I = Hessian::ghess2t(i,0);
-      J = Hessian::ghess2t(i,1);
-
-      a = TPM::gt2s(I,0);
-      b = TPM::gt2s(I,1);
-
-      c = TPM::gt2s(J,0);
-      d = TPM::gt2s(J,1);
-
-      for(int j = 0;j < gn();++j){
-
-         e = spmm2s[j][0];
-         z = spmm2s[j][1];
-
-         (*this)(i,j) = 0.0;
-
-         for(int l = 0;l < Tools::gM();++l)
-            (*this)(i,j) += tpmm(a,b,e,l,c,d,z,l) + tpmm(a,b,z,l,c,d,e,l);
+            (*this)(i,j) += tpmm(a,b,c,d,e,l,z,l);
 
          (*this)(i,j) *= scale;
 

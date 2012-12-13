@@ -17,7 +17,7 @@ double *Newton::norm;
  */
 void Newton::init(){
 
-   norm = new double [Hessian::gn()];
+   norm = new double [TPTPM::gn()];
 
    int hess = 0;
 
@@ -51,7 +51,7 @@ Newton::Newton(){
 
    H = new Hessian();
 
-   x = new double [Hessian::gn() + 1];
+   x = new double [TPTPM::gn() + 1];
 
 }
 
@@ -62,9 +62,9 @@ Newton::Newton(const Newton &newton_c){
 
    H = new Hessian(newton_c.gH());
 
-   x = new double [Hessian::gn() + 1];
+   x = new double [TPTPM::gn() + 1];
 
-   for(int i = 0;i < Hessian::gn() + 1;++i)
+   for(int i = 0;i < TPTPM::gn() + 1;++i)
       x[i] = newton_c.gx()[i];
 
 }
@@ -139,7 +139,7 @@ void Newton::construct(double t,const TPM &ham,const SUP &P){
    H->lagr();
 
    //last element zero!
-   (*H)(Hessian::gn(),Hessian::gn()) = 0.0;
+   (*H)(TPTPM::gn(),TPTPM::gn()) = 0.0;
    
    H->symmetrize();
 
@@ -173,10 +173,10 @@ void Newton::gradient(double t,const TPM &ham,const SUP &P){
    TT1.T(1,P.gT1());
 #endif
 
-   for(int i = 0;i < Hessian::gn();++i){
+   for(int i = 0;i < TPTPM::gn();++i){
 
-      I = Hessian::ghess2t(i,0);
-      J = Hessian::ghess2t(i,1);
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
 
       x[i] = t * P.gI()(I,J) - ham(I,J);
 
@@ -197,7 +197,7 @@ void Newton::gradient(double t,const TPM &ham,const SUP &P){
    }
 
    //last part of right-hand side (lagrange multiplier)
-   x[Hessian::gn()] = 0.0;
+   x[TPTPM::gn()] = 0.0;
 
 }
 
@@ -218,7 +218,7 @@ double Newton::gnorm(int i){
  */
 double Newton::gnorm(int I,int J){
 
-   return norm[Hessian::gt2hess(I,J)];
+   return norm[TPTPM::gt2tpmm(I,J)];
 
 }
 
@@ -228,7 +228,7 @@ double Newton::gnorm(int I,int J){
  */
 double Newton::gx(int I,int J) const {
 
-   int i = Hessian::gt2hess(I,J);
+   int i = TPTPM::gt2tpmm(I,J);
 
    return x[i];
 
@@ -254,7 +254,7 @@ double Newton::gx(int a,int b,int c,int d) const {
    int I = TPM::gs2t(a,b);
    int J = TPM::gs2t(c,d);
 
-   int i = Hessian::gt2hess(I,J);
+   int i = TPTPM::gt2tpmm(I,J);
 
    return phase * x[i];
 

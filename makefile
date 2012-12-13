@@ -21,13 +21,9 @@ CPPSRC	= pr_sdp.cpp\
             EIG.cpp\
             Hessian.cpp\
             TPSPM.cpp\
+            TPTPM.cpp\
             SPSPM.cpp\
             PHSPM.cpp\
-            TPTPnsM.cpp\
-            TPSPnsM.cpp\
-            PHSPnsM.cpp\
-            PHPHnsM.cpp\
-            PHPHM.cpp\
             Newton.cpp
 
 OBJ	= $(CPPSRC:.cpp=.o)
@@ -70,6 +66,18 @@ all:
 #------------------------------------------------------------------------------
 #  Compile with only P and Q conditions activated
 #------------------------------------------------------------------------------
+
+P:
+	@echo
+	@echo '  +++ Building $(BINNAME) with only the P condition'
+	@echo	
+	$(MAKE) $(BRIGHT_ROOT)/$(BINNAME) 
+	@if test $?; then \
+	   echo; echo '*************** FAILED! ***************' ; echo; \
+	 else \
+	   echo; echo '  +++ $(BINNAME) has been built with only the P condition successfully!'; \
+	   echo; \
+	 fi
 
 PQ:
 	@echo

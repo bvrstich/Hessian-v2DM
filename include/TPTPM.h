@@ -1,5 +1,5 @@
-#ifndef HESSIAN_H
-#define HESSIAN_H
+#ifndef TPTPM_H
+#define TPTPM_H
 
 #include <iostream>
 #include <fstream>
@@ -10,35 +10,33 @@ using std::vector;
 
 #include "Matrix.h"
 
-class PHM;
-
 /**
  * @author Brecht Verstichel
  * @date 23-11-2012\n\n
- * This class Hessian is a class written for matrices of two particle matrices, it inherits alle the function from its mother 
+ * This class TPTPM is a class written for matrices of two particle matrices, it inherits alle the function from its mother 
  * Matrix, some special member functions and two lists that give the relationship between the sp and the tp 
  * basis.
  */
 
-class Hessian : public Matrix {
+class TPTPM : public Matrix {
 
    /**
     * Output stream operator overloaded
     * @param output The stream to which you are writing (e.g. cout)
-    * @param hess_p the Hessian you want to print
+    * @param hess_p the TPTPM you want to print
     */
-   friend ostream &operator<<(ostream &output,const Hessian &hess_p);
+   friend ostream &operator<<(ostream &output,const TPTPM &hess_p);
 
    public:
       
       //constructor
-      Hessian();
+      TPTPM();
 
       //copy constructor
-      Hessian(const Hessian &);
+      TPTPM(const TPTPM &);
 
       //destructor
-      virtual ~Hessian();
+      virtual ~TPTPM();
 
       using Matrix::operator=;
 
@@ -50,31 +48,25 @@ class Hessian : public Matrix {
       //access to the numbers in tp mode
       double operator()(int I,int J,int K,int L) const;
 
-      void I(const TPM &);
-
-      void Q(const TPM &);
-
-      void G(const PHM &);
-
-      void T(const DPM &);
-
-      void lagr();
-
       void dirprodtrace(const DPM &);
-
-      void dpt_slow(const DPM &);
 
       static int gn();
 
-      static int ghess2t(int,int);
+      static int gtpmm2t(int,int);
 
-      static int gt2hess(int,int);
+      static int gt2tpmm(int,int);
       
       static void init();
 
       static void clear();
 
    private:
+
+      //!list relating the single-particle space to the TPTPM basis
+      static vector< vector<int> > tpmm2t;
+
+      //!list relating the single-particle space to the TPTPM basis
+      static int **t2tpmm;
 
 };
 
