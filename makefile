@@ -27,6 +27,7 @@ CPPSRC	= pr_sdp.cpp\
             TPSPnsM.cpp\
             PHSPnsM.cpp\
             PHPHnsM.cpp\
+            PHPHM.cpp\
             Newton.cpp
 
 OBJ	= $(CPPSRC:.cpp=.o)
