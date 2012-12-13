@@ -241,4 +241,14 @@ void PPHM::T(int option,const TPM &tpm){
 
 }
 
+/**
+ * access the numbers of the PPHM matrix in sp mode, but where the input sp indices
+ * are ordered (a < b < c, d < e < z) so that no if statements and other bullcrap is needed.
+ */
+const double &PPHM::ordacc(int a,int b,int c,int d,int e,int z) const {
+   
+   return  (*this)(s2pph[a][b][c],s2pph[d][e][z]);
+
+}
+
 /* vim: set ts=3 sw=3 expandtab :*/

@@ -56,6 +56,8 @@ class DPM : public Matrix {
       //maak een DPM van een TPM via de hat functie
       void hat(const TPM &);
 
+      void convert(double *) const;
+
       static void init();
 
       static void clear();

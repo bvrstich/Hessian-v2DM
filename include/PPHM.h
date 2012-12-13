@@ -45,6 +45,8 @@ class PPHM : public Matrix {
       //easy to access the numbers, in sp mode
       double operator()(int a,int b,int c,int d,int e,int f) const;
 
+      const double &ordacc(int,int,int,int,int,int) const;
+
       //maak een PPHM van een TPM via de T2 conditie
       void T(int option,const TPM &);
 
