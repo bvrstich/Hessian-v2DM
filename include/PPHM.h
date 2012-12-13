@@ -50,6 +50,8 @@ class PPHM : public Matrix {
       //maak een PPHM van een TPM via de T2 conditie
       void T(int option,const TPM &);
 
+      void convert(double *) const;
+
       static void init();
 
       static void clear();

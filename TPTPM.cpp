@@ -403,3 +403,123 @@ void TPTPM::dpt2(const DPM &dpm){
    delete [] dparray;
 
 }
+
+/**
+ * construct the antisymmetrized, double 'tilde' of a symmetric direct product of two PPHM matrices
+ * @param pphm input PPHM
+ */
+void TPTPM::dpw2(const PPHM &pphm){ 
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   double *ppharray = new double [M5*M];
+
+   pphm.convert(ppharray);
+
+   int I,J,K,L;
+
+   int a,b,c,d,e,z,t,h;
+
+   for(int i = 0;i < TPTPM::gn();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = i;j < TPTPM::gn();++j){
+
+         K = TPTPM::gtpmm2t(j,0);
+         L = TPTPM::gtpmm2t(j,1);
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         (*this)(i,j) = 0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = 0;l < M;++l){
+
+               (*this)(i,j) += ppharray[k*M5 + d*M4 + a*M3 + l*M2 + h*M + e] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + z*M + t]
+
+                  + ppharray[k*M5 + d*M4 + a*M3 + l*M2 + z*M + t] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + h*M + e]
+
+                  - ppharray[k*M5 + d*M4 + b*M3 + l*M2 + h*M + e] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + z*M + t]
+
+                  - ppharray[k*M5 + d*M4 + b*M3 + l*M2 + z*M + t] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + h*M + e]
+
+                  - ppharray[k*M5 + c*M4 + a*M3 + l*M2 + h*M + e] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + z*M + t]
+
+                  - ppharray[k*M5 + c*M4 + a*M3 + l*M2 + z*M + t] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + h*M + e]
+
+                  + ppharray[k*M5 + c*M4 + b*M3 + l*M2 + h*M + e] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + z*M + t]
+
+                  + ppharray[k*M5 + c*M4 + b*M3 + l*M2 + z*M + t] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + h*M + e]
+
+                  - ppharray[k*M5 + d*M4 + a*M3 + l*M2 + h*M + z] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + e*M + t]
+
+                  - ppharray[k*M5 + d*M4 + a*M3 + l*M2 + e*M + t] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + h*M + z]
+
+                  + ppharray[k*M5 + d*M4 + b*M3 + l*M2 + h*M + z] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + e*M + t]
+
+                  + ppharray[k*M5 + d*M4 + b*M3 + l*M2 + e*M + t] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + h*M + z]
+
+                  + ppharray[k*M5 + c*M4 + a*M3 + l*M2 + h*M + z] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + e*M + t]
+
+                  + ppharray[k*M5 + c*M4 + a*M3 + l*M2 + e*M + t] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + h*M + z]
+
+                  - ppharray[k*M5 + c*M4 + b*M3 + l*M2 + h*M + z] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + e*M + t]
+
+                  - ppharray[k*M5 + c*M4 + b*M3 + l*M2 + e*M + t] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + h*M + z]
+
+                  - ppharray[k*M5 + d*M4 + a*M3 + l*M2 + t*M + e] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + z*M + h]
+
+                  - ppharray[k*M5 + d*M4 + a*M3 + l*M2 + z*M + h] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + t*M + e]
+
+                  + ppharray[k*M5 + d*M4 + b*M3 + l*M2 + t*M + e] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + z*M + h]
+
+                  + ppharray[k*M5 + d*M4 + b*M3 + l*M2 + z*M + h] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + t*M + e]
+
+                  + ppharray[k*M5 + c*M4 + a*M3 + l*M2 + t*M + e] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + z*M + h]
+
+                  + ppharray[k*M5 + c*M4 + a*M3 + l*M2 + z*M + h] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + t*M + e]
+
+                  - ppharray[k*M5 + c*M4 + b*M3 + l*M2 + t*M + e] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + z*M + h]
+
+                  - ppharray[k*M5 + c*M4 + b*M3 + l*M2 + z*M + h] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + t*M + e]
+
+                  + ppharray[k*M5 + d*M4 + a*M3 + l*M2 + t*M + z] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + e*M + h]
+
+                  + ppharray[k*M5 + d*M4 + a*M3 + l*M2 + e*M + h] * ppharray[k*M5 + b*M4 + c*M3 + l*M2 + t*M + z]
+
+                  - ppharray[k*M5 + d*M4 + b*M3 + l*M2 + t*M + z] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + e*M + h]
+
+                  - ppharray[k*M5 + d*M4 + b*M3 + l*M2 + e*M + h] * ppharray[k*M5 + a*M4 + c*M3 + l*M2 + t*M + z]
+
+                  - ppharray[k*M5 + c*M4 + a*M3 + l*M2 + t*M + z] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + e*M + h]
+
+                  - ppharray[k*M5 + c*M4 + a*M3 + l*M2 + e*M + h] * ppharray[k*M5 + b*M4 + d*M3 + l*M2 + t*M + z]
+
+                  + ppharray[k*M5 + c*M4 + b*M3 + l*M2 + t*M + z] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + e*M + h]
+
+                  + ppharray[k*M5 + c*M4 + b*M3 + l*M2 + e*M + h] * ppharray[k*M5 + a*M4 + d*M3 + l*M2 + t*M + z];
+
+            }
+
+      }
+   }
+
+   delete [] ppharray;
+
+}

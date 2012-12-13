@@ -251,4 +251,26 @@ const double &PPHM::ordacc(int a,int b,int c,int d,int e,int z) const {
 
 }
 
+/** 
+ * yet another way to avoid the very slow access operator with the ordering
+ */
+void PPHM::convert(double *ppharray) const{
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   for(int a = 0;a < M;++a)
+      for(int b = 0;b < M;++b)
+         for(int c = 0;c < M;++c)
+            for(int d = 0;d < M;++d)
+               for(int e = 0;e < M;++e)
+                  for(int z = 0;z < M;++z)
+                     ppharray[a*M5 + b*M4 + c*M3 + d*M2 + e*M + z] = (*this)(a,b,c,d,e,z);
+
+
+}
+
 /* vim: set ts=3 sw=3 expandtab :*/
