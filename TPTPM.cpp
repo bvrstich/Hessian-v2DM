@@ -239,7 +239,7 @@ void TPTPM::dp(const PHM &phm){
          h = TPM::gt2s(L,1);
 
          //first 16 direct product terms of the PHM object
-         (*this)(i,j) += phm(a,d,e,h) * phm(c,b,t,z) + phm(a,d,t,z) * phm(c,b,e,h) - phm(a,d,z,h) * phm(c,b,t,e) - phm(a,d,t,e) * phm(c,b,z,h)
+         (*this)(i,j) = phm(a,d,e,h) * phm(c,b,t,z) + phm(a,d,t,z) * phm(c,b,e,h) - phm(a,d,z,h) * phm(c,b,t,e) - phm(a,d,t,e) * phm(c,b,z,h)
 
                - phm(a,d,e,t) * phm(c,b,h,z) - phm(a,d,h,z) * phm(c,b,e,t) + phm(a,d,z,t) * phm(c,b,h,e) + phm(a,d,h,e) * phm(c,b,z,t)
 
@@ -257,86 +257,6 @@ void TPTPM::dp(const PHM &phm){
 
       }
 
-   }
-
-   this->symmetrize();
-
-}
-
-/**
- * construct the antisymmetrized, double 'tilde' of a symmetric direct product of two PPHM matrices
- * @param pphm input PPHM
- */
-void TPTPM::dpw2_slow(const PPHM &pphm){ 
-
-   int M = Tools::gM();
-
-   int I,J,K,L;
-
-   int a,b,c,d,e,z,t,h;
-
-   for(int i = 0;i < TPTPM::gn();++i){
-
-      I = TPTPM::gtpmm2t(i,0);
-      J = TPTPM::gtpmm2t(i,1);
-
-      a = TPM::gt2s(I,0);
-      b = TPM::gt2s(I,1);
-
-      c = TPM::gt2s(J,0);
-      d = TPM::gt2s(J,1);
-
-      for(int j = i;j < TPTPM::gn();++j){
-
-         K = TPTPM::gtpmm2t(j,0);
-         L = TPTPM::gtpmm2t(j,1);
-
-         e = TPM::gt2s(K,0);
-         z = TPM::gt2s(K,1);
-
-         t = TPM::gt2s(L,0);
-         h = TPM::gt2s(L,1);
-
-         (*this)(i,j) = 0.0;
-
-         for(int k = 0;k < M;++k)
-            for(int l = 0;l < M;++l){
-
-               (*this)(i,j) += pphm(k,d,a,l,h,e) * pphm(k,b,c,l,z,t) + pphm(k,d,a,l,z,t) * pphm(k,b,c,l,h,e)
-
-                  - pphm(k,d,b,l,h,e) * pphm(k,a,c,l,z,t) - pphm(k,d,b,l,z,t) * pphm(k,a,c,l,h,e)
-
-                  - pphm(k,c,a,l,h,e) * pphm(k,b,d,l,z,t) - pphm(k,c,a,l,z,t) * pphm(k,b,d,l,h,e)
-
-                  + pphm(k,c,b,l,h,e) * pphm(k,a,d,l,z,t) + pphm(k,c,b,l,z,t) * pphm(k,a,d,l,h,e)
- 
-                  - pphm(k,d,a,l,h,z) * pphm(k,b,c,l,e,t) - pphm(k,d,a,l,e,t) * pphm(k,b,c,l,h,z)
-
-                  + pphm(k,d,b,l,h,z) * pphm(k,a,c,l,e,t) + pphm(k,d,b,l,e,t) * pphm(k,a,c,l,h,z)
-
-                  + pphm(k,c,a,l,h,z) * pphm(k,b,d,l,e,t) + pphm(k,c,a,l,e,t) * pphm(k,b,d,l,h,z)
-
-                  - pphm(k,c,b,l,h,z) * pphm(k,a,d,l,e,t) - pphm(k,c,b,l,e,t) * pphm(k,a,d,l,h,z)
-
-                  - pphm(k,d,a,l,t,e) * pphm(k,b,c,l,z,h) - pphm(k,d,a,l,z,h) * pphm(k,b,c,l,t,e)
-
-                  + pphm(k,d,b,l,t,e) * pphm(k,a,c,l,z,h) + pphm(k,d,b,l,z,h) * pphm(k,a,c,l,t,e)
-
-                  + pphm(k,c,a,l,t,e) * pphm(k,b,d,l,z,h) + pphm(k,c,a,l,z,h) * pphm(k,b,d,l,t,e)
-
-                  - pphm(k,c,b,l,t,e) * pphm(k,a,d,l,z,h) - pphm(k,c,b,l,z,h) * pphm(k,a,d,l,t,e)
-
-                  + pphm(k,d,a,l,t,z) * pphm(k,b,c,l,e,h) + pphm(k,d,a,l,e,h) * pphm(k,b,c,l,t,z)
-
-                  - pphm(k,d,b,l,t,z) * pphm(k,a,c,l,e,h) - pphm(k,d,b,l,e,h) * pphm(k,a,c,l,t,z)
-
-                  - pphm(k,c,a,l,t,z) * pphm(k,b,d,l,e,h) - pphm(k,c,a,l,e,h) * pphm(k,b,d,l,t,z)
-
-                  + pphm(k,c,b,l,t,z) * pphm(k,a,d,l,e,h) + pphm(k,c,b,l,e,h) * pphm(k,a,d,l,t,z);
- 
-            }
-
-      }
    }
 
    this->symmetrize();
@@ -521,5 +441,140 @@ void TPTPM::dpw2(const PPHM &pphm){
    }
 
    delete [] ppharray;
+
+}
+
+/**
+ * construct the "symmetric direct product" of two PPHM matrices, once traced and once 'tilded'.
+ * BE CAREFULL! NOT SYMMETRIC!
+ */
+void TPTPM::dptw(const PPHM &pphm){ 
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   double *ppharray = new double [M5*M];
+
+   pphm.convert(ppharray);
+
+   int I,J,K,L;
+
+   int a,b,c,d,e,z,t,h;
+
+   for(int i = 0;i < TPTPM::gn();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = 0;j < TPTPM::gn();++j){
+
+         K = TPTPM::gtpmm2t(j,0);
+         L = TPTPM::gtpmm2t(j,1);
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         (*this)(i,j) =  0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = 0;l < M;++l){
+
+               (*this)(i,j) += ppharray[a*M5 + b*M4 + k*M3 + l*M2 + h*M + e] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + z*M + t]   
+
+                  + ppharray[a*M5 + b*M4 + k*M3 + l*M2 + z*M + t] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + h*M + e]
+
+                  - ppharray[a*M5 + b*M4 + k*M3 + l*M2 + h*M + z] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + e*M + t]   
+
+                  - ppharray[a*M5 + b*M4 + k*M3 + l*M2 + e*M + t] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + h*M + z]
+
+                  - ppharray[a*M5 + b*M4 + k*M3 + l*M2 + t*M + e] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + z*M + h]   
+
+                  - ppharray[a*M5 + b*M4 + k*M3 + l*M2 + z*M + h] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + t*M + e]
+
+                  + ppharray[a*M5 + b*M4 + k*M3 + l*M2 + t*M + z] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + e*M + h]   
+
+                  + ppharray[a*M5 + b*M4 + k*M3 + l*M2 + e*M + h] * ppharray[c*M5 + d*M4 + k*M3 + l*M2 + t*M + z];
+
+            }
+
+      }
+
+   }
+
+   delete [] ppharray;
+
+}
+
+/**
+ * construct the "symmetric direct product" of two PPHM matrices, doubly traced
+ */
+void TPTPM::dpt2(const PPHM &pphm){ 
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   double *ppharray = new double [M5*M];
+
+   pphm.convert(ppharray);
+
+   int I,J,K,L;
+
+   int a,b,c,d,e,z,t,h;
+
+   for(int i = 0;i < TPTPM::gn();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = i;j < TPTPM::gn();++j){
+
+         K = TPTPM::gtpmm2t(j,0);
+         L = TPTPM::gtpmm2t(j,1);
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         (*this)(i,j) =  0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = 0;l < M;++l){
+
+               (*this)(i,j) += ppharray[a*M5 + b*M4 + k*M3 + e*M2 + z*M + l] * ppharray[c*M5 + d*M4 + k*M3 + t*M2 + h*M + l]
+
+                  + ppharray[a*M5 + b*M4 + k*M3 + t*M2 + h*M + l] * ppharray[c*M5 + d*M4 + k*M3 + e*M2 + z*M + l];
+
+            }
+
+      }
+
+   }
+
+   delete [] ppharray;
+
+   this->symmetrize();
 
 }

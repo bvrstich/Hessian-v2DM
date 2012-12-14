@@ -114,3 +114,81 @@ void SPSPM::dpt2(double scale,const PHM &phm){
    this->symmetrize();
 
 }
+
+/**
+ * construct a SPSPM object by doing a quadruple tilde of the direct product of a PPHM matrix
+ * @param scale scalefactor for the barred object
+ * @param pphm input PPHM object
+ */
+void SPSPM::dpw4(double scale,const PPHM &pphm){
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   double *ppharray = new double [M5*M];
+
+   pphm.convert(ppharray);
+
+   int a,c,e,t;
+
+   for(int i = 0;i < gn();++i){
+
+      a = TPSPM::gspmm2s(i,0);
+      c = TPSPM::gspmm2s(i,1);
+
+      for(int j = i;j < gn();++j){
+
+         e = TPSPM::gspmm2s(j,0);
+         t = TPSPM::gspmm2s(j,1);
+
+         (*this)(i,j) = 0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = k + 1;l < M;++l)
+               for(int m = 0;m < M;++m)
+                  for(int n = m + 1;n < M;++n){
+
+                     (*this)(i,j) +=  ppharray[k*M5 + l*M4 + a*M3 + m*M2 + n*M + e] * ppharray[k*M5 + l*M4 + c*M3 + m*M2 + n*M + t]
+
+                        + ppharray[k*M5 + l*M4 + a*M3 + m*M2 + n*M + t] * ppharray[k*M5 + l*M4 + c*M3 + m*M2 + n*M + e];
+
+                  }
+
+
+         (*this)(i,j) *= 4.0 * scale;
+
+      }
+   }
+
+   this->symmetrize();
+
+   delete [] ppharray;
+
+}
+
+ostream &operator<<(ostream &output,const SPSPM &spmm_p){
+
+   int a,c,e,t;
+
+   for(int i = 0;i < spmm_p.gn();++i){
+
+      a = TPSPM::gspmm2s(i,0);
+      c = TPSPM::gspmm2s(i,1);
+
+      for(int j = i;j < spmm_p.gn();++j){
+
+         e = TPSPM::gspmm2s(j,0);
+         t = TPSPM::gspmm2s(j,1);
+
+         output << i << "\t" << j << "\t|\t" << a << "\t" << c << "\t" << e << "\t" << t << "\t|\t" << spmm_p(i,j) << endl;
+
+      }
+
+   }
+
+   return output;
+
+}

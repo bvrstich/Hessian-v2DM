@@ -49,13 +49,6 @@ int main(void) {
 
    Newton::init();
 
-   PPHM pphm;
-   pphm.fill_Random();
-
-   TPTPM tpmm;
-   tpmm.dpw2(pphm);
-
-/*
    Newton newton;
 
    //hamiltoniaan
@@ -146,7 +139,7 @@ int main(void) {
 
    cout << endl;
    cout << "Total nr of Newton steps = " << tot_iter << endl;
-*/
+
    Newton::clear();
 
    TPSPM::clear();

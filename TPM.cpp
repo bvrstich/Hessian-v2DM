@@ -626,3 +626,101 @@ void TPM::bar(double scale,const DPM &dpm){
    this->symmetrize();
 
 }
+
+/**
+ * Map a PPHM (pphm) onto a TPM object (*this) with a T2 down map, see primal_dual.pdf for more information
+ * @param pphm input PPHM
+ */
+void TPM::T(const PPHM &pphm){
+
+   int M = Tools::gM();
+   int N = Tools::gN();
+
+   //first make some necessary derivate matrices of pphm
+   TPM bar;
+   bar.bar(pphm);
+
+   PHM phm;
+   phm.bar(pphm);
+
+   //watch out, scaling for spm is not the usual!
+   SPM spm;
+
+   for(int a = 0;a < M;++a)
+      for(int b = a;b < M;++b){
+
+         spm(a,b) = 0;
+
+         for(int c = 0;c < M;++c)
+            spm(a,b) += phm(c,a,c,b);
+
+         spm(a,b) *= 0.5/(N - 1.0);
+
+      }
+
+   int a,b,c,d;
+
+   for(int i = 0;i < gn();++i){
+
+      a = t2s[i][0];
+      b = t2s[i][1];
+
+      for(int j = i;j < gn();++j){
+
+         c = t2s[j][0];
+         d = t2s[j][1];
+
+         //first the tp part:
+         (*this)(i,j) = bar(i,j);
+
+         //then the ph part:
+         (*this)(i,j) -= phm(d,a,b,c) - phm(d,b,a,c) - phm(c,a,b,d) + phm(c,b,a,d);
+
+         //finaly the three sp parts:
+         if(b == d)
+            (*this)(i,j) += spm(a,c);
+
+         if(b == c)
+            (*this)(i,j) -= spm(a,d);
+
+         if(a == c)
+            (*this)(i,j) += spm(b,d);
+
+      }
+   }
+
+   this->symmetrize();
+
+}
+
+/**
+ * Map a PPHM (pphm) object on a TPM (*this) object by tracing one pair of indices from the pphm (for more info, see primal_dual.pdf)
+ * @param pphm input PPHM
+ */
+void TPM::bar(const PPHM &pphm){
+
+   int M = Tools::gM();
+
+   int a,b,c,d;
+
+   for(int i = 0;i < gn();++i){
+
+      a = t2s[i][0];
+      b = t2s[i][1];
+
+      for(int j = i;j < gn();++j){
+
+         c = t2s[j][0];
+         d = t2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int l = 0;l < M;++l)
+            (*this)(i,j) += pphm(a,b,l,c,d,l);
+
+      }
+   }
+
+   this->symmetrize();
+
+}

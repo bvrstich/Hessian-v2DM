@@ -13,6 +13,7 @@ using std::vector;
 class SPM;
 class PHM;
 class DPM;
+class PPHM;
 class SUP;
 class Newton;
 
@@ -93,6 +94,10 @@ class TPM : public Matrix {
       void bar(double,const DPM &);
 
       void T(int,const DPM &);
+
+      void T(const PPHM &);
+
+      void bar(const PPHM &);
 
       static int gs2t(int,int);
 

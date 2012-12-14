@@ -54,7 +54,9 @@ class TPTPM : public Matrix {
 
       void dpw2(const PPHM &);
 
-      void dpw2_slow(const PPHM &);
+      void dptw(const PPHM &);
+
+      void dpt2(const PPHM &);
 
       static int gn();
 

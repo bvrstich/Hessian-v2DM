@@ -58,6 +58,8 @@ class Hessian : public Matrix {
 
       void T(const DPM &);
 
+      void T(const PPHM &);
+
       void lagr();
 
       void dirprodtrace(const DPM &);

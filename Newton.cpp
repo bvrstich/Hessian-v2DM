@@ -133,6 +133,10 @@ void Newton::construct(double t,const TPM &ham,const SUP &P){
    H->T(P.gT1());
 #endif
 
+#ifdef __T2_CON
+   H->T(P.gT2());
+#endif
+
    H->dscal(t);
 
    //the constraint/lagrange multiplier part of the Hessian
@@ -173,6 +177,11 @@ void Newton::gradient(double t,const TPM &ham,const SUP &P){
    TT1.T(1,P.gT1());
 #endif
 
+#ifdef __T2_CON
+   TPM TT2;
+   TT2.T(P.gT2());
+#endif
+
    for(int i = 0;i < TPTPM::gn();++i){
 
       I = TPTPM::gtpmm2t(i,0);
@@ -190,6 +199,10 @@ void Newton::gradient(double t,const TPM &ham,const SUP &P){
 
 #ifdef __T1_CON
       x[i] += t * TT1(I,J);
+#endif
+
+#ifdef __T2_CON
+      x[i] += t * TT2(I,J);
 #endif
 
       x[i] *= 2.0 * norm[i];

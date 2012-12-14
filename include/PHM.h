@@ -10,6 +10,8 @@ using std::vector;
 #include "Matrix.h"
 #include "TPM.h"
 
+class PPHM;
+
 /**
  * @author Brecht Verstichel
  * @date 23-02-2010\n\n
@@ -51,6 +53,8 @@ class PHM : public Matrix {
       double &operator()(int a,int b,int c,int d);
 
       void G(int option,const TPM &);
+
+      void bar(const PPHM &);
 
       static int gs2ph(int,int);
 

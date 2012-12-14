@@ -541,3 +541,116 @@ void Hessian::T(const DPM &dpm){
    this->symmetrize();
 
 }
+
+/**
+ * construct the T2 part of the hessian matrix: add to current hessian!
+ * @param pphm input PPHM object
+ */
+void Hessian::T(const PPHM &pphm){
+
+   //this will be the slowest part of the program :(
+   TPTPM dpt2;
+   dpt2.dpt2(pphm);
+
+   TPTPM dpw2;
+   dpw2.dpw2(pphm);
+
+   TPTPM dptw;
+   dptw.dptw(pphm);
+
+   TPSPM dpw3;
+   dpw3.dpw3(1.0/(Tools::gN() - 1.0),pphm);
+
+   TPSPM dptw2;
+   dptw2.dptw2(1.0/(Tools::gN() - 1.0),pphm);
+
+   SPSPM dpw4;
+   dpw4.dpw4(0.5/((Tools::gN() - 1.0)*(Tools::gN() - 1.0)),pphm);
+
+   int I,J,K,L;
+
+   int a,b,c,d;
+   int e,z,t,h;
+
+   for(int i = 0;i < TPTPM::gn();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = i;j < TPTPM::gn();++j){
+
+         K = TPTPM::gtpmm2t(j,0);
+         L = TPTPM::gtpmm2t(j,1);
+
+         e = TPM::gt2s(K,0);
+         z = TPM::gt2s(K,1);
+
+         t = TPM::gt2s(L,0);
+         h = TPM::gt2s(L,1);
+
+         (*this)(i,j) += 2.0 * Newton::gnorm(i) * Newton::gnorm(j) * ( dpt2(i,j) - dptw(i,j) - dptw(j,i) + dpw2(i,j) );
+
+         if(z == h){
+
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * (dpw3(a,b,c,d,e,t) - dptw2(a,b,c,d,e,t));
+
+            if(a == c)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * dpw4(b,d,e,t);
+
+            if(b == c)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * dpw4(a,d,e,t);
+
+            if(b == d)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * dpw4(a,c,e,t);
+
+         }
+
+         if(z == t){
+
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * (dpw3(a,b,c,d,e,h) - dptw2(a,b,c,d,e,h));
+
+            if(a == c)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * dpw4(b,d,e,h);
+
+            if(b == c)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * dpw4(a,d,e,h);
+
+            if(b == d)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * dpw4(a,c,e,h);
+
+         }
+
+         if(e == t){
+
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * (dpw3(a,b,c,d,z,h) - dptw2(a,b,c,d,z,h));
+
+            if(a == c)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * dpw4(b,d,z,h);
+
+            if(b == c)
+               (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * dpw4(a,d,z,h);
+
+            if(b == d)
+               (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * dpw4(a,c,z,h);
+
+         }
+
+         if(b == d)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * (dpw3(e,z,t,h,a,c) - dptw2(e,z,t,h,a,c));
+
+         if(b == c)
+            (*this)(i,j) += Newton::gnorm(i) * Newton::gnorm(j) * (dpw3(e,z,t,h,a,d) - dptw2(e,z,t,h,a,d));
+
+         if(a == c)
+            (*this)(i,j) -= Newton::gnorm(i) * Newton::gnorm(j) * (dpw3(e,z,t,h,b,d) - dptw2(e,z,t,h,b,d));
+
+      }
+   }
+
+}

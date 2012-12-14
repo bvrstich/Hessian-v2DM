@@ -570,7 +570,7 @@ void SUP::fill(const TPM &tpm){
 #endif
 
 #ifdef __T2_CON
-   T2->T(tpm);
+   T2->T(0,tpm);
 #endif
 
 }
@@ -594,7 +594,7 @@ void SUP::fill(){
 #endif 
 
 #ifdef __T2_CON
-   T2->T(*I);
+   T2->T(0,*I);
 #endif 
 
 }

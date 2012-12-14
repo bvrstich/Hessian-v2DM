@@ -45,6 +45,10 @@ class TPSPM : public RecMat {
 
       void bar(double,const TPTPM &);
 
+      void dpw3(double,const PPHM &);
+
+      void dptw2(double,const PPHM &);
+
       static int gspmm2s(int,int);
 
       static int gs2spmm(int,int);

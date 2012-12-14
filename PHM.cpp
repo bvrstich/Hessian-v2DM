@@ -188,4 +188,35 @@ int PHM::gph2s(int option,int i){
 
 }
 
+
+/**
+ * Map a PPHM (pphm) object onto a PHM (*this) object by tracing one pair of indices (see primal_dual.pdf for more info)
+ * @param pphm Input PPHM
+ */
+void PHM::bar(const PPHM &pphm)
+{
+   int a,b,c,d;
+
+   for(int i = 0;i < gn();++i){
+
+      a = ph2s[i][0];
+      b = ph2s[i][1];
+
+      for(int j = i;j < gn();++j){
+
+         c = ph2s[j][0];
+         d = ph2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int l = 0;l < Tools::gM();++l)
+            (*this)(i,j) += pphm(l,a,b,l,c,d);
+
+      }
+   }
+
+   this->symmetrize();
+
+}
+
 /* vim: set ts=3 sw=3 expandtab :*/

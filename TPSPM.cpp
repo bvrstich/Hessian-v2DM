@@ -267,3 +267,131 @@ void TPSPM::dpt(double scale,const PHM &phm){
    }
 
 }
+
+/**
+ * fill the TPSPM object by constructing the direct product of two PPHM object, trice 'tilded'
+ * @param scale factor to scale the trace with
+ * @param pphm input PPHM matrix
+ */
+void TPSPM::dpw3(double scale,const PPHM &pphm){
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   double *ppharray = new double [M5*M];
+
+   pphm.convert(ppharray);
+
+   int I,J;
+
+   int a,b,c,d,e,t;
+
+   for(int i = 0;i < gm();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = 0;j < gn();++j){
+
+         e = spmm2s[j][0];
+         t = spmm2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = k + 1;l < M;++l)
+               for(int m = 0;m < M;++m){
+
+                  (*this)(i,j) += ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + e] * ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + t]
+
+                     + ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + t] * ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + e]
+
+                     - ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + e] * ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + t]
+
+                     - ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + t] * ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + e]
+
+                     - ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + e] * ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + t]
+
+                     - ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + t] * ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + e]
+
+                     + ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + e] * ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + t]
+
+                     + ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + t] * ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + e];
+
+               }
+
+         (*this)(i,j) *= 2.0 * scale;
+
+      }
+   }
+
+   delete [] ppharray;
+
+}
+
+/**
+ * fill the TPSPM object by constructing the direct product of two PPHM object, trice 'tilded'
+ * @param scale factor to scale the trace with
+ * @param pphm input PPHM matrix
+ */
+void TPSPM::dptw2(double scale,const PPHM &pphm){
+
+   int M = Tools::gM();
+   int M2 = M*M;
+   int M3 = M2*M;
+   int M4 = M3*M;
+   int M5 = M4*M;
+
+   double *ppharray = new double [M5*M];
+
+   pphm.convert(ppharray);
+
+   int I,J;
+
+   int a,b,c,d,e,t;
+
+   for(int i = 0;i < gm();++i){
+
+      I = TPTPM::gtpmm2t(i,0);
+      J = TPTPM::gtpmm2t(i,1);
+
+      a = TPM::gt2s(I,0);
+      b = TPM::gt2s(I,1);
+
+      c = TPM::gt2s(J,0);
+      d = TPM::gt2s(J,1);
+
+      for(int j = 0;j < gn();++j){
+
+         e = spmm2s[j][0];
+         t = spmm2s[j][1];
+
+         (*this)(i,j) = 0.0;
+
+         for(int k = 0;k < M;++k)
+            for(int l = k + 1;l < M;++l)
+               for(int m = 0;m < M;++m){
+
+                  (*this)(i,j) += ppharray[a*M5 + b*M4 + m*M3 + k*M2 + l*M + e] * ppharray[c*M5 + d*M4 + m*M3 + k*M2 + l*M + t]
+
+                     + ppharray[a*M5 + b*M4 + m*M3 + k*M2 + l*M + t] * ppharray[c*M5 + d*M4 + m*M3 + k*M2 + l*M + e];
+
+               }
+
+         (*this)(i,j) *= 2.0 * scale;
+
+      }
+   }
+
+   delete [] ppharray;
+
+}

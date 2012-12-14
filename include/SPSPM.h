@@ -23,7 +23,7 @@ class SPSPM : public Matrix {
     * @param output The stream to which you are writing (e.g. cout)
     * @param hessbb_p the SPSPM you want to print
     */
-   friend ostream &operator<<(ostream &output,const SPSPM &hessbb_p);
+   friend ostream &operator<<(ostream &output,const SPSPM &spmm_p);
 
    public:
       
@@ -47,6 +47,8 @@ class SPSPM : public Matrix {
 
       void dpt2(double,const PHM &);
 
+      void dpw4(double,const PPHM &);
+      
    private:
 
 };
