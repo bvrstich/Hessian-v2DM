@@ -34,8 +34,8 @@ int main(void) {
 
    cout.precision(10);
 
-   const int M = 12;//dim sp hilbert space
-   const int N = 7;//nr of particles
+   const int M = 8;//dim sp hilbert space
+   const int N = 4;//nr of particles
 
    Tools::init(M,N);
 
@@ -49,6 +49,24 @@ int main(void) {
 
    Newton::init();
 
+   TPM tpm;
+   tpm.fill_Random();
+
+   ofstream out("../sdp-bright/tpm.in");
+   out.precision(15);
+
+   for(int i = 0;i < tpm.gn();++i)
+      for(int j = i;j < tpm.gn();++j)
+         out << i << "\t" << j << "\t" << tpm(i,j) << endl; 
+
+   Hessian H;
+   H = 0.0;
+
+   H.Q(tpm);
+
+   cout << H;
+   
+/*
    Newton newton;
 
    //hamiltoniaan
@@ -68,7 +86,7 @@ int main(void) {
    int tot_iter = 0;
 
    //outer iteration: scaling of the potential barrier
-   while(t > 1.0e-12){
+   //while(t > 1.0e-12){
 
       cout << t << "\t" << rdm.trace() << "\t" << rdm.ddot(ham) << "\t";
 
@@ -78,7 +96,7 @@ int main(void) {
 
       //inner iteration: 
       //Newton's method for finding the minimum of the current potential
-      while(convergence > tolerance){
+    //  while(convergence > tolerance){
 
          ++nr_newton_iter;
 
@@ -95,6 +113,8 @@ int main(void) {
          TPM delta;
          delta.convert(newton);
 
+         cout << delta << endl;
+
          //line search
          double a = delta.line_search(t,P,ham);
 
@@ -103,7 +123,7 @@ int main(void) {
 
          convergence = a*a*delta.ddot(delta);
 
-      }
+     // }
 
       cout << nr_newton_iter << endl;
 
@@ -129,7 +149,7 @@ int main(void) {
 
       tot_iter += nr_newton_iter;
 
-   }
+   //}
 
    cout << endl;
 
@@ -139,7 +159,7 @@ int main(void) {
 
    cout << endl;
    cout << "Total nr of Newton steps = " << tot_iter << endl;
-
+*/
    Newton::clear();
 
    TPSPM::clear();

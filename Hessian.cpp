@@ -133,7 +133,7 @@ void Hessian::Q(const TPM &Q){
    SPM Q2bar;
    Q2bar.bar(4.0/(Tools::gN()*(Tools::gN()-1.0)*(Tools::gN()-1.0)),Q2);
 
-   double trace = Q2bar.trace()/(double)Tools::gN();
+   double trace = 0.5 * Q2bar.trace()/(double)Tools::gN();
 
    int I,J,K,L;
 
