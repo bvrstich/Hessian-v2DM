@@ -311,21 +311,21 @@ void TPSPM::dpw3(double scale,const PPHM &pphm){
             for(int l = k + 1;l < M;++l)
                for(int m = 0;m < M;++m){
 
-                  (*this)(i,j) += ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + e] * ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + t]
+                  (*this)(i,j) += ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + e] * ppharray[m*M5 + b*M4 + c*M3 + k*M2 + l*M + t]
 
-                     + ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + t] * ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + e]
+                     + ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + t] * ppharray[m*M5 + b*M4 + c*M3 + k*M2 + l*M + e]
 
-                     - ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + e] * ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + t]
+                     - ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + e] * ppharray[m*M5 + a*M4 + c*M3 + k*M2 + l*M + t]
 
-                     - ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + t] * ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + e]
+                     - ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + t] * ppharray[m*M5 + a*M4 + c*M3 + k*M2 + l*M + e]
 
-                     - ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + e] * ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + t]
+                     - ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + e] * ppharray[m*M5 + b*M4 + d*M3 + k*M2 + l*M + t]
 
-                     - ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + t] * ppharray[m*M5 + d*M4 + b*M3 + k*M2 + l*M + e]
+                     - ppharray[m*M5 + c*M4 + a*M3 + k*M2 + l*M + t] * ppharray[m*M5 + b*M4 + d*M3 + k*M2 + l*M + e]
 
-                     + ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + e] * ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + t]
+                     + ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + e] * ppharray[m*M5 + a*M4 + d*M3 + k*M2 + l*M + t]
 
-                     + ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + t] * ppharray[m*M5 + d*M4 + a*M3 + k*M2 + l*M + e];
+                     + ppharray[m*M5 + c*M4 + b*M3 + k*M2 + l*M + t] * ppharray[m*M5 + a*M4 + d*M3 + k*M2 + l*M + e];
 
                }
 
