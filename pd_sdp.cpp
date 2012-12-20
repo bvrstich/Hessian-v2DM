@@ -123,7 +123,6 @@ int main(void) {
 
       //nog updaten van Z en X
       SUP DZ;
-
       DZ.fill(delta);
 
       //DX is B - D^{-1}*DZ*D^{-1}
@@ -136,22 +135,7 @@ int main(void) {
 
       //voor de zekerheid nog projecteren op juiste subruimte:
       DX.proj_C();
-/*
-      //met deze 'ansatz' het X stelsel proberen op te lossen
-      //eerst rechterlid B maken
-      B = X;
 
-      B.invert();
-
-      B.dscal(gamma*pd_gap/dim);
-
-      B -= Z;
-
-      B.proj_C();
-
-      //los het stelsel op, geeft aantal duale iteraties nodig terug:
-      cout << DX.solve(B,D) << endl;
-*/
       //welke stapgrootte moet ik nemen?
       if(flag == 0 || flag == 2){//voor centering
 

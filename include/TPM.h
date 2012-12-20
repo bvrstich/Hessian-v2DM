@@ -77,10 +77,6 @@ class TPM : public Matrix {
 
       void in_sp(const char *);
 
-      double line_search(double t,SUP &,const TPM &ham);
-
-      double line_search(double t,const TPM &,const TPM &);
-
       double S_2() const;
 
       void set_S_2();

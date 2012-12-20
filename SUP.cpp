@@ -723,58 +723,6 @@ void SUP::proj_C(){
 }
 
 /**
- * Implementation of the linear conjugate gradient algorithm for the solution of the dual Newton system\n\n
- * H(*this) = B in which H is the dual hessian map
- * @param B right hand side of the equation
- * @param D SUP matrix that defines the structure of the hessian map (the metric) (inverse of the primal Newton equation hessian)
- * @return return the number of iteration required to converge
- */
-int SUP::solve(SUP &B,const SUP &D){
-
-   SUP HB;
-   HB.H(*this,D);
-
-   B -= HB;
-
-   //de r initialiseren op B - H DZ
-   SUP r(B);
-
-   double rr = r.ddot(r);
-   double rr_old,ward;
-
-   int cg_iter = 0;
-
-   while(rr > 1.0e-5){
-
-      ++cg_iter;
-
-      HB.H(B,D);
-
-      ward = rr/B.ddot(HB);
-
-      //delta += ward*b
-      this->daxpy(ward,B);
-
-      //r -= ward*HB
-      r.daxpy(-ward,HB);
-
-      //nieuwe r_norm maken
-      rr_old = rr;
-      rr = r.ddot(r);
-
-      //eerst herschalen van b
-      B.dscal(rr/rr_old);
-
-      //dan r er bijtellen
-      B += r;
-
-   }
-   
-   return cg_iter;
-
-}
-
-/**
  * Line search function that checks how large a step you can take in a given primal dual predictor direction (DS,DZ), starting from 
  * the current primal dual point (S,Z), before deviating beyond max_dev from the central path.\n\n
  * (*this) = DS --> primal search direction
@@ -896,19 +844,5 @@ void SUP::proj_U(){
 
    //fill up the rest with the right maps
    this->fill();
-
-}
-
-/**
- * The dual hessian map:\n\n
- * HB = DBD (dus SUP::L_map), projected onto C-space (SUP::proj_C)
- * @param B SUP matrix onto which the hessian works.
- * @param D SUP matrix that defines the structure of the map (metric)
- */
-void SUP::H(const SUP &B,const SUP &D) {
-
-   this->L_map(D,B);
-
-   this->proj_C();
 
 }
