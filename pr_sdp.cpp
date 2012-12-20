@@ -80,10 +80,6 @@ int main(void) {
       //Newton's method for finding the minimum of the current potential
       while(convergence > tolerance){
 
-         cout << endl;
-         cout << "Inside Newton Loop" << endl;
-         cout << endl;
-
          ++nr_newton_iter;
 
          SUP P;
@@ -106,15 +102,12 @@ int main(void) {
          rdm.daxpy(a,delta);
 
          convergence = a*a*delta.ddot(delta);
-         
-         cout << nr_newton_iter << "\t" << convergence << "\t" << tolerance << endl;
-         cout << endl;
 
       }
 
-      //cout << nr_newton_iter << endl;
+      cout << nr_newton_iter << endl;
 
-      t /= 2.0;
+      t /= 5.0;
 
       //what is the tolerance for the newton method?
       tolerance = 1.0e-5*t;
