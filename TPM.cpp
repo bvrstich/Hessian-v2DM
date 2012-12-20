@@ -16,10 +16,17 @@ using std::ios;
 int **TPM::s2t;
 vector< vector<int> > TPM::t2s;
 
+double TPM::Sa;
+double TPM::Sb;
+double TPM::Sc;
+
 /**
  * initialize the static lists
  */
 void TPM::init(){
+
+   int N = Tools::gN();
+   int M = Tools::gM();
 
    //allocatie van sp2tp
    s2t = new int * [Tools::gM()];
@@ -47,6 +54,33 @@ void TPM::init(){
          ++t;
 
       }
+
+   Sa = 1.0;
+   Sb = 0.0;
+   Sc = 0.0;
+
+#ifdef __Q_CON
+   Sa += 1.0;
+   Sb += (4.0*N*N + 2.0*N - 4.0*N*M + M*M - M)/(N*N*(N - 1.0)*(N - 1.0));
+   Sc += (2.0*N - M)/((N - 1.0)*(N - 1.0));
+#endif
+
+#ifdef __G_CON
+   Sa += 4.0;
+   Sc += (2.0*N - M - 2.0)/((N - 1.0)*(N - 1.0));
+#endif
+
+#ifdef __T1_CON
+   Sa += M - 4.0;
+   Sb += (M*M*M - 6.0*M*M*N -3.0*M*M + 12.0*M*N*N + 12.0*M*N + 2.0*M - 18.0*N*N - 6.0*N*N*N)/( 3.0*N*N*(N - 1.0)*(N - 1.0) );
+   Sc -= (M*M + 2.0*N*N - 4.0*M*N - M + 8.0*N - 4.0)/( 2.0*(N - 1.0)*(N - 1.0) );
+#endif
+
+#ifdef __T2_CON
+   Sa += 5.0*M - 8.0;
+   Sb += 2.0/(N - 1.0);
+   Sc += (2.0*N*N + (M - 2.0)*(4.0*N - 3.0) - M*M)/(2.0*(N - 1.0)*(N - 1.0));
+#endif
 
 }
 
@@ -722,5 +756,57 @@ void TPM::bar(const PPHM &pphm){
    }
 
    this->symmetrize();
+
+}
+
+/**
+ * Collaps a SUP matrix S onto a TPM matrix like this:\n\n
+ * sum_i Tr (S u^i)f^i = this
+ * @param option = 0, project onto full symmetric matrix space, = 1 project onto traceless symmetric matrix space
+ * @param S input SUP
+ */
+void TPM::collaps(int option,const SUP &S){
+
+   *this = S.gI();
+
+   TPM hulp;
+
+   hulp.Q(1,S.gQ());
+
+   *this += hulp;
+
+#ifdef __G_CON
+   hulp.G(1,S.gG());
+
+   *this += hulp;
+#endif
+
+#ifdef __T1_CON
+   hulp.T(1,S.gT1());
+
+   *this += hulp;
+#endif
+
+#ifdef __T2_CON
+   hulp.T(S.gT2());
+
+   *this += hulp;
+#endif
+
+   if(option == 1)
+      this->proj_Tr();
+
+}
+
+/**
+ * ( Overlapmatrix of the U-basis ) - map, maps a TPM onto a different TPM, this map is actually a Q-like map
+ * for which the paramaters a,b and c are calculated in primal_dual.pdf. Since it is a Q-like map the inverse
+ * can be taken as well.
+ * @param option = 1 direct overlapmatrix-map is used , = -1 inverse overlapmatrix map is used
+ * @param tpm_d the input TPM
+ */
+void TPM::S(int option,const TPM &tpm_d){
+
+   this->Q(option,Sa,Sb,Sc,tpm_d);
 
 }

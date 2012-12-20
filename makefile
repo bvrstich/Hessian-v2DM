@@ -7,8 +7,8 @@
 # -----------------------------------------------------------------------------
 #   Sources for all modules
 # -----------------------------------------------------------------------------
-BINNAME = pr_sdp
-CPPSRC	= pr_sdp.cpp\
+BINNAME = pd_sdp
+CPPSRC	= pd_sdp.cpp\
             Tools.cpp\
             Matrix.cpp\
             RecMat.cpp\
@@ -54,7 +54,7 @@ all:
 	@echo
 	@echo '  +++ Building $(BINNAME)...'
 	@echo	
-	$(MAKE) $(BRIGHT_ROOT)/$(BINNAME) DEFS="-DPQGT"
+	$(MAKE) $(BRIGHT_ROOT)/$(BINNAME) DEFS="-DPQ"
 	@if test $?; then \
 	   echo; echo '*************** FAILED! ***************' ; echo; \
 	 else \

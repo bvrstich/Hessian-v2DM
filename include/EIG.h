@@ -116,6 +116,14 @@ class EIG{
 
       double lsfunc(double) const;
 
+      double center_dev() const;
+
+      double centerpot(double,const EIG &,double,double) const;
+
+      static int gdim();
+
+      static void init();
+
    private:
 
       //!pointer to a Vector<TPM> object, the eigenvalues of the P part of a SUP matrix are stored here
@@ -139,6 +147,8 @@ class EIG{
       //!single pointer to a Vector<PPHM> object, the eigenvalues of T2 part of a SUP matrix will be stored here.
       Vector<PPHM> *vT2;
 #endif
+         
+      static int dim;
 
 };
 

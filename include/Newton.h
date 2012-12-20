@@ -39,9 +39,9 @@ class Newton{
 
       double gx(int,int,int,int) const;
 
-      void construct(double,const TPM &,const SUP &);
+      void construct(const SUP &);
 
-      void gradient(double,const TPM &,const SUP &);
+      void set_rhs(const TPM &);
 
       static double gnorm(int);
 

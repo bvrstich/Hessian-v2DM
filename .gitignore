@@ -7,6 +7,7 @@
 *.png
 *.gif
 callgrind.out.*
+pd_sdp
 pr_sdp
 tags
 docs

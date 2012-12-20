@@ -99,6 +99,14 @@ class TPM : public Matrix {
 
       void bar(const PPHM &);
 
+      void collaps(int option,const SUP &S);
+
+      int solve(TPM &b,const SUP &D);
+
+      void H(const TPM &,const SUP &);
+
+      void S(int,const TPM &);
+
       static int gs2t(int,int);
 
       static int gt2s(int,int);
@@ -116,6 +124,9 @@ class TPM : public Matrix {
 
       //!static list of dimension [M][M] that takes two sp indices a,b and returns a tp index i: i = s2t[a][b]
       static int **s2t;
+
+      //!static variables of the inverse overlapmatrix.
+      static double Sa,Sb,Sc;
 
 };
 
