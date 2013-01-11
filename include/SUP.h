@@ -154,10 +154,6 @@ class SUP{
 
       void proj_U();
 
-      void H(const SUP &,const SUP &);
-
-      int solve(SUP &,const SUP &);
-
       double line_search(const SUP &,const SUP &,const SUP &,double) const;
 
       static void init();
